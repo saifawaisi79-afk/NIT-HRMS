@@ -7,6 +7,7 @@ import StudentDashboard from "@/components/dashboards/StudentDashboard";
 import FacultyDashboard from "@/components/dashboards/FacultyDashboard";
 import HODDashboard from "@/components/dashboards/HODDashboard";
 import AdminDashboard from "@/components/dashboards/AdminDashboard";
+import ITDashboard from "@/components/dashboards/ITDashboard";
 
 export default function DashboardPage() {
   const { activePortal } = useDepartment();
@@ -25,8 +26,9 @@ export default function DashboardPage() {
     case "HOD":
       return <HODDashboard />;
     case "Administration":
-    case "IT":
       return <AdminDashboard />;
+    case "IT":
+      return <ITDashboard />;
     default:
       return <PortalSelector />;
   }
