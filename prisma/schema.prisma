@@ -1,0 +1,319 @@
+// Prisma Schema for CSE Department Management System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         String        // SUPER_ADMIN, HOD, DEPT_ADMIN, FACULTY, COORDINATOR, STUDENT, MANAGEMENT
+  avatarUrl    String?
+  phone        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  faculty      Faculty?
+  student      Student?
+  notifications Notification[]
+}
+
+model Department {
+  id          String    @id @default("dept-cse")
+  code        String    @unique @default("CSE")
+  name        String    @default("Computer Science & Engineering")
+  hodName     String    @default("Dr. Ramesh Kumar")
+  hodEmail    String    @default("hod.cse@nithrms.edu")
+  phone       String    @default("+91 80 2345 6789")
+  building    String    @default("Sir M. Visvesvaraya Block, 3rd Floor")
+  academicYear String   @default("2026-27")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Faculty {
+  id              String         @id @default(uuid())
+  userId          String?        @unique
+  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employeeId      String         @unique // e.g. "CSE-FAC-014"
+  name            String
+  email           String         @unique
+  phone           String
+  designation     String         // "Professor", "Associate Professor", "Assistant Professor", "Guest Faculty"
+  department      String         @default("Computer Science & Engineering")
+  qualification   String         // e.g. "Ph.D (IIT Bombay), M.Tech"
+  experienceYears Int            @default(5)
+  specialization  String         // e.g. "Artificial Intelligence, Data Systems"
+  attendanceRate  Float          @default(95.0)
+  status          String         @default("Active") // "Active", "On Leave", "Sabbatical"
+  avatarUrl       String?
+  bio             String?
+  officeRoom      String?        @default("CS-304")
+  joiningDate     String?        @default("2018-07-15")
+  isSpotlight     Boolean        @default(false)
+  spotlightTitle  String?        // e.g. "Faculty of the Month"
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  subjectsTaught  Subject[]
+  timetableSlots  TimetableSlot[]
+  leaveRequests   LeaveRequest[]
+  guidedProjects  Project[]
+  studyMaterials  StudyMaterial[]
+  assignments     Assignment[]
+}
+
+model Student {
+  id              String         @id @default(uuid())
+  userId          String?        @unique
+  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usn             String         @unique // e.g. "1NT23CS001"
+  name            String
+  email           String         @unique
+  phone           String
+  gender          String         // "Male", "Female"
+  year            Int            // 1, 2, 3, 4
+  semester        Int            // 1 to 8
+  section         String         // "A", "B", "C"
+  cgpa            Float          @default(8.5)
+  backlogs        Int            @default(0)
+  attendanceRate  Float          @default(88.0)
+  status          String         @default("Active") // "Active", "At Risk", "Suspended"
+  avatarUrl       String?
+  dateOfBirth     String?
+  parentName      String?
+  parentPhone     String?
+  parentEmail     String?
+  address         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  attendanceRecords Attendance[]
+  examResults       ExamResult[]
+  submissions       AssignmentSubmission[]
+  leaveRequests     LeaveRequest[]
+  placementApps     PlacementApplication[]
+}
+
+model Subject {
+  id          String          @id @default(uuid())
+  code        String          @unique // e.g. "CS501"
+  name        String          // e.g. "Database Management Systems"
+  credits     Int             @default(4)
+  semester    Int             // 1 to 8
+  type        String          // "Theory", "Lab", "Elective", "Project", "Seminar"
+  description String?
+  facultyId   String?
+  faculty     Faculty?        @relation(fields: [facultyId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  attendanceRecords Attendance[]
+  timetableSlots    TimetableSlot[]
+  exams             Exam[]
+  assignments       Assignment[]
+  studyMaterials    StudyMaterial[]
+}
+
+model Attendance {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  date        String   // "2026-09-04"
+  status      String   // "Present", "Absent", "Late", "On Duty"
+  remarks     String?
+  createdAt   DateTime @default(now())
+}
+
+model TimetableSlot {
+  id          String   @id @default(uuid())
+  dayOfWeek   String   // "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+  periodIndex Int      // 1, 2, 3, 4, 5, 6, 7
+  startTime   String   // "09:00 AM"
+  endTime     String   // "10:00 AM"
+  semester    Int      // 3, 5, 7
+  section     String   // "A", "B", "C"
+  room        String   // "CS-201", "Lab-2", "Seminar Hall"
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  facultyId   String
+  faculty     Faculty  @relation(fields: [facultyId], references: [id])
+}
+
+model LeaveRequest {
+  id          String   @id @default(uuid())
+  applicantType String // "FACULTY" or "STUDENT"
+  applicantName String
+  applicantId   String // FacultyId or StudentId
+  leaveType   String   // "Casual Leave", "Medical Leave", "On Duty", "Academic Leave"
+  startDate   String
+  endDate     String
+  daysCount   Int      @default(1)
+  reason      String
+  status      String   @default("Pending") // "Pending", "Approved", "Rejected"
+  adminRemarks String?
+  appliedAt   DateTime @default(now())
+  reviewedAt  DateTime?
+
+  faculty     Faculty? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  student     Student? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
+model Exam {
+  id          String       @id @default(uuid())
+  name        String       // "Internal Assessment 1 (CIE-1)", "Mid-Term", "Semester End Exam"
+  type        String       // "Internal", "External", "Practical", "Viva"
+  semester    Int
+  subjectId   String
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  date        String
+  maxMarks    Float        @default(50)
+  results     ExamResult[]
+}
+
+model ExamResult {
+  id            String  @id @default(uuid())
+  examId        String
+  exam          Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  marksObtained Float
+  totalMarks    Float   @default(50)
+  grade         String  // "O", "A+", "A", "B+", "B", "C", "F"
+  percentage    Float
+  status        String  // "Pass", "Fail"
+}
+
+model Assignment {
+  id          String                 @id @default(uuid())
+  title       String
+  description String
+  subjectId   String
+  subject     Subject                @relation(fields: [subjectId], references: [id])
+  facultyId   String
+  faculty     Faculty                @relation(fields: [facultyId], references: [id])
+  dueDate     String
+  totalMarks  Int                    @default(20)
+  submissions AssignmentSubmission[]
+  createdAt   DateTime               @default(now())
+}
+
+model AssignmentSubmission {
+  id           String     @id @default(uuid())
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  submittedAt  DateTime   @default(now())
+  fileUrl      String?
+  status       String     @default("Submitted") // "Submitted", "Late", "Reviewed"
+  marksGiven   Int?
+  feedback     String?
+}
+
+model StudyMaterial {
+  id          String   @id @default(uuid())
+  title       String
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  facultyId   String
+  faculty     Faculty  @relation(fields: [facultyId], references: [id])
+  semester    Int
+  moduleNumber Int     @default(1)
+  fileType    String   // "PDF", "PPT", "DOC", "Video", "Link"
+  fileUrl     String
+  fileSize    String?  @default("3.2 MB")
+  uploadedAt  DateTime @default(now())
+}
+
+model Notice {
+  id          String   @id @default(uuid())
+  title       String
+  category    String   // "Academic", "Examination", "Placement", "Event", "Holiday", "Urgent"
+  content     String
+  priority    String   @default("Normal") // "Low", "Normal", "High", "Urgent"
+  targetRole  String   @default("All") // "All", "Faculty", "Students", "3rd Year"
+  attachmentUrl String?
+  publishedBy String   @default("HOD Office")
+  publishDate String
+  expiryDate  String?
+  createdAt   DateTime @default(now())
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // "Hackathon", "Workshop", "Seminar", "FDP", "Contest", "Industrial Visit"
+  bannerUrl   String?
+  venue       String
+  eventDate   String
+  eventTime   String
+  organizer   String
+  description String
+  registeredCount Int  @default(0)
+  maxCapacity Int      @default(100)
+  status      String   @default("Upcoming") // "Upcoming", "Ongoing", "Completed"
+  createdAt   DateTime @default(now())
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  teamMembers String   // Comma separated USNs or names
+  guideId     String
+  guide       Faculty  @relation(fields: [guideId], references: [id])
+  domain      String   // "Artificial Intelligence", "Web3 / Blockchain", "Cloud & DevOps", "IoT & Embedded"
+  techStack   String   // "Next.js, Python, PyTorch, FastAPI"
+  abstract    String
+  status      String   @default("Development") // "Idea", "Planning", "Development", "Testing", "Completed"
+  githubUrl   String?
+  demoUrl     String?
+  semester    Int      @default(7)
+  createdAt   DateTime @default(now())
+}
+
+model PlacementCompany {
+  id           String                 @id @default(uuid())
+  name         String                 // e.g. "Google", "Microsoft", "Cisco"
+  logoUrl      String?
+  role         String                 // "Software Development Engineer"
+  packageLPA   Float                  // e.g. 24.5
+  location     String                 // "Bengaluru / Hyderabad"
+  minCgpa      Float                  @default(7.5)
+  maxBacklogs  Int                    @default(0)
+  deadline     String
+  driveDate    String
+  status       String                 @default("Active") // "Active", "Closed"
+  applications PlacementApplication[]
+}
+
+model PlacementApplication {
+  id        String           @id @default(uuid())
+  companyId String
+  company   PlacementCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  status    String           @default("Applied") // "Applied", "Shortlisted", "Interview", "Selected", "Rejected"
+  appliedAt DateTime         @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // "info", "success", "warning", "danger"
+  category  String   // "Attendance", "Leave", "Exam", "Placement", "Assignment"
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
