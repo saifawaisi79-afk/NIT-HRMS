@@ -532,43 +532,58 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
     : currentRole === "Student" ? "AS"
     : "MM";
 
+  const [showLogoMenu, setShowLogoMenu] = useState(false);
+
   return (
     <>
       <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/70 px-4 lg:px-8 py-2.5 transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
         <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
 
-          {/* ── LEFT: Brand + Portal Indicator ── */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Link href="/" className="flex items-center gap-1.5 group">
-              <span className="text-xl lg:text-2xl font-black tracking-tight text-slate-950 font-sans">CSE</span>
-              <span className="text-xl lg:text-2xl font-black text-[#00b4d8] tracking-tight">Nexus</span>
-              <span className="hidden sm:inline-block ml-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                Department of CSE
-              </span>
-            </Link>
-
-            {activePortal ? (
-              <div className="hidden xl:flex items-center gap-2 pl-3 border-l border-slate-200">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-slate-900 text-white shadow-xs">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  {activePortal === "Student" ? "Student Portal"
-                    : activePortal === "Faculty" ? "Faculty Portal"
-                    : activePortal === "HOD" ? "HOD Portal"
-                    : activePortal === "IT" ? "IT Dev Portal"
-                    : "Administration Portal"}
-                </span>
-                <button
-                  onClick={exitPortal}
-                  className="text-[11px] px-2.5 py-1 rounded-full border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-600 font-bold transition shadow-2xs"
-                  title="Switch to another portal"
-                >
-                  Switch Portal
-                </button>
+          {/* ── LEFT: Brand Logo ── */}
+          <div className="flex items-center gap-3 shrink-0 relative">
+            <button
+              onClick={() => setShowLogoMenu(!showLogoMenu)}
+              className="flex items-center gap-2.5 group"
+              title="CSE Nexus — NIT"
+            >
+              {/* NIT CSE logo tile */}
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#005f73] to-[#0a9396] flex flex-col items-center justify-center shadow-md shadow-[#005f73]/20 shrink-0">
+                <span className="text-[8px] font-black text-white leading-none tracking-wider">NIT</span>
+                <span className="text-[8px] font-black text-white/80 leading-none tracking-wider">CSE</span>
               </div>
-            ) : (
-              <span className="hidden xl:inline-block pl-3 border-l border-slate-200 text-xs font-bold text-slate-400">
-                Portal Selector
-              </span>
+              {/* Word mark */}
+              <div className="flex items-baseline gap-1">
+                <span className="text-xl lg:text-2xl font-black tracking-tight text-slate-950 font-sans">CSE</span>
+                <span className="text-xl lg:text-2xl font-black text-[#00b4d8] tracking-tight">Nexus</span>
+              </div>
+            </button>
+
+            {/* Logo click dropdown — only back to portals + sign out */}
+            {showLogoMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowLogoMenu(false)} />
+                <div className="absolute left-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 px-2 z-50 animate-fade-in">
+                  <div className="px-3 py-2 border-b border-slate-100 mb-1">
+                    <p className="text-[11px] font-extrabold text-slate-900">CSE Nexus</p>
+                    <p className="text-[10px] text-slate-400">NIT — Computer Science & Engg.</p>
+                  </div>
+                  <button
+                    onClick={() => { exitPortal(); setShowLogoMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition"
+                  >
+                    <Home className="w-4 h-4 text-slate-400" />
+                    <span>Back to Portal Selection</span>
+                  </button>
+                  <Link
+                    href="/login"
+                    onClick={() => setShowLogoMenu(false)}
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium text-rose-600 hover:bg-rose-50 transition"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </Link>
+                </div>
+              </>
             )}
           </div>
 
