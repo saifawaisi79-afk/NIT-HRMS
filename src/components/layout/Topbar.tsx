@@ -29,6 +29,16 @@ import {
   Rocket,
   Briefcase,
   BarChart3,
+  UserPlus,
+  TrendingUp,
+  ClipboardList,
+  Activity,
+  Star,
+  Video,
+  CreditCard,
+  FileCheck,
+  ShieldCheck,
+  Headphones,
 } from "lucide-react";
 import { useDepartment, UserRole } from "@/context/DepartmentContext";
 
@@ -131,194 +141,140 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
 
         {/* Center: Navigation Bar with Pills and Dropdowns matching screenshot layout */}
         <nav ref={navRef} className="hidden md:flex items-center gap-2 lg:gap-3 text-sm font-medium">
-          {/* Academic Core Dropdown (Active dark teal pill as in screenshot) */}
+          {/* Main Dropdown (Active dark teal pill as in screenshot) */}
           <div className="relative">
             <button
               onClick={() => setActiveDropdown(activeDropdown === "main" ? null : "main")}
               className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold text-xs transition-all ${
-                activeDropdown === "main" || pathname === "/" || pathname === "/attendance" || pathname === "/timetable"
-                  ? "bg-[#005f73] text-white shadow-sm"
+                activeDropdown === "main"
+                  ? "bg-[#005f73] text-white shadow-sm ring-2 ring-[#005f73]/20"
+                  : "bg-[#005f73] text-white hover:bg-[#004e5f] shadow-sm"
+              }`}
+            >
+              <span>Main</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 opacity-90 ${activeDropdown === "main" ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Floating Dropdown Menu matching screenshot layout */}
+            {activeDropdown === "main" && (
+              <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-3 px-2 z-50 animate-fade-in text-xs space-y-0.5">
+                {[
+                  { label: "Recruitment Portal", href: "/faculty", icon: UserPlus },
+                  { label: "Targets", href: "/workload", icon: TrendingUp },
+                  { label: "Onboarding", href: "/students", icon: ClipboardList },
+                  { label: "Performance", href: "/exams", icon: Activity },
+                  { label: "Training", href: "/events", icon: HelpCircle },
+                  { label: "Rewards & Recognition", href: "/reports", icon: Star },
+                  { label: "Internal Job Portal", href: "/placements", icon: Briefcase },
+                  { label: "Meeting Scheduler", href: "/timetable", icon: Video },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setActiveDropdown(null)}
+                      className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors group"
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors stroke-[1.75]" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Academic Core Dropdown (Secondary dark teal pill) */}
+          <div className="relative">
+            <button
+              onClick={() => setActiveDropdown(activeDropdown === "academic" ? null : "academic")}
+              className={`flex items-center gap-1.5 px-5 py-2 rounded-full font-bold text-xs transition-all ${
+                activeDropdown === "academic" || pathname === "/" || pathname === "/attendance" || pathname === "/timetable" || pathname === "/subjects"
+                  ? "bg-[#084c61] text-white shadow-sm"
                   : "bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
               <span>Academic Core</span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-80" />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 opacity-90 ${activeDropdown === "academic" ? "rotate-180" : ""}`} />
             </button>
 
-            {activeDropdown === "main" && (
-              <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fade-in text-xs space-y-1">
-                <Link
-                  href="/"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <BarChart3 className="w-4 h-4 text-[#005f73]" />
-                  <div>
-                    <p>Dashboard Overview</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Department KPIs & Metrics</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/attendance"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <CalendarCheck className="w-4 h-4 text-[#005f73]" />
-                  <div>
-                    <p>Attendance Register</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Daily class & lab attendance</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/timetable"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <CalendarDays className="w-4 h-4 text-[#005f73]" />
-                  <div>
-                    <p>Timetable & Schedule</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Weekly lecture slots & labs</p>
-                  </div>
-                </Link>
+            {activeDropdown === "academic" && (
+              <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-3 px-2 z-50 animate-fade-in text-xs space-y-0.5">
+                {[
+                  { label: "Dashboard Overview", href: "/", icon: BarChart3 },
+                  { label: "Attendance Register", href: "/attendance", icon: CalendarCheck },
+                  { label: "Timetable & Schedule", href: "/timetable", icon: CalendarDays },
+                  { label: "Curriculum & Courses", href: "/subjects", icon: BookOpen },
+                  { label: "Faculty Directory", href: "/faculty", icon: Users },
+                  { label: "Student Directory", href: "/students", icon: GraduationCap },
+                  { label: "Coursework & Assignments", href: "/assignments", icon: FileText },
+                  { label: "Campus Placements", href: "/placements", icon: Award },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setActiveDropdown(null)}
+                      className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors group"
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors stroke-[1.75]" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Faculty & Students Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setActiveDropdown(activeDropdown === "campaign" ? null : "campaign")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-xs text-slate-700 hover:text-slate-950 transition-colors ${
-                activeDropdown === "campaign" || pathname === "/faculty" || pathname === "/students" || pathname === "/subjects"
-                  ? "bg-slate-100 font-bold text-slate-950"
-                  : ""
-              }`}
-            >
-              <span>Faculty & Students</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-
-            {activeDropdown === "campaign" && (
-              <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fade-in text-xs space-y-1">
-                <Link
-                  href="/faculty"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <Users className="w-4 h-4 text-indigo-600" />
-                  <div>
-                    <p>Faculty & Staff Registry</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Professors, designations & profiles</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/students"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <GraduationCap className="w-4 h-4 text-pink-600" />
-                  <div>
-                    <p>Student Directory</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Enrolments, CGPA & attendance flags</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/subjects"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <BookOpen className="w-4 h-4 text-emerald-600" />
-                  <div>
-                    <p>Curriculum & Courses</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Syllabus modules & credits</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/placements"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <Briefcase className="w-4 h-4 text-amber-600" />
-                  <div>
-                    <p>Campus Placement Drives</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Tier-1 companies & offers (₹44 LPA)</p>
-                  </div>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Academic Operations Dropdown */}
+          {/* Billing & Support Dropdown */}
           <div className="relative">
             <button
               onClick={() => setActiveDropdown(activeDropdown === "billing" ? null : "billing")}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-xs text-slate-700 hover:text-slate-950 transition-colors ${
-                activeDropdown === "billing" || pathname === "/leaves" || pathname === "/exams" || pathname === "/assignments" || pathname === "/reports"
+                activeDropdown === "billing" || pathname === "/fees" || pathname === "/leaves" || pathname === "/reports"
                   ? "bg-slate-100 font-bold text-slate-950"
                   : ""
               }`}
             >
-              <span>Academic Operations</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              <span>Billing & Support</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 text-slate-400 ${activeDropdown === "billing" ? "rotate-180" : ""}`} />
             </button>
 
             {activeDropdown === "billing" && (
-              <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-fade-in text-xs space-y-1">
-                <Link
-                  href="/leaves"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <CalendarOff className="w-4 h-4 text-rose-600" />
-                  <div>
-                    <p>Faculty & Student Leaves</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Sanctions, quotas & HOD approvals</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/exams"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <Award className="w-4 h-4 text-teal-600" />
-                  <div>
-                    <p>Examinations & CIE</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Internal assessment & GPA ledger</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/assignments"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <FileText className="w-4 h-4 text-indigo-600" />
-                  <div>
-                    <p>Coursework & Assignments</p>
-                    <p className="text-[10px] text-slate-400 font-normal">Problem sets & digital grading</p>
-                  </div>
-                </Link>
-                <Link
-                  href="/reports"
-                  onClick={() => setActiveDropdown(null)}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 font-semibold text-slate-800"
-                >
-                  <BarChart3 className="w-4 h-4 text-slate-600" />
-                  <div>
-                    <p>Accreditation Reports</p>
-                    <p className="text-[10px] text-slate-400 font-normal">AICTE / NBA compliance audits</p>
-                  </div>
-                </Link>
+              <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-3 px-2 z-50 animate-fade-in text-xs space-y-0.5">
+                {[
+                  { label: "Fee Management & Dues", href: "/fees", icon: CreditCard },
+                  { label: "Student Waivers & Grants", href: "/fees", icon: FileCheck },
+                  { label: "Faculty & Student Leaves", href: "/leaves", icon: CalendarOff },
+                  { label: "Accreditation & Audits", href: "/reports", icon: ShieldCheck },
+                  { label: "IT Cell Helpdesk", href: "/settings", icon: Headphones },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setActiveDropdown(null)}
+                      className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors group"
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors stroke-[1.75]" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* Campus IT Support item with HelpCircle icon */}
+          {/* Campus IT Cell Support pill matching screenshot */}
           <Link
             href="/settings"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-xs text-slate-700 hover:text-slate-950 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-xs text-slate-700 hover:text-slate-950 hover:bg-slate-100 transition-colors"
           >
             <HelpCircle className="w-4 h-4 text-slate-400" />
-            <span>Campus IT Support</span>
+            <span>IT Cell Support</span>
           </Link>
         </nav>
 
