@@ -44,7 +44,7 @@ import {
 } from "@/lib/data/cse-demo-data";
 
 export type UserRole = "HOD" | "Faculty" | "Student" | "Super Admin";
-export type PortalType = "Student" | "Faculty" | "HOD" | "Administration";
+export type PortalType = "Student" | "Faculty" | "HOD" | "Administration" | "IT";
 
 interface DepartmentContextType {
   // Portal State & Navigation
@@ -172,22 +172,6 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [toasts, setToasts] = useState<{ id: string; title: string; message: string; type: "success" | "info" | "warning" | "error" }[]>([]);
 
-  // Check saved portal in session
-  useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem("csex_active_portal") as PortalType | null;
-      if (saved && ["Student", "Faculty", "HOD", "Administration"].includes(saved)) {
-        setActivePortal(saved);
-        if (saved === "Student") setCurrentRole("Student");
-        else if (saved === "Faculty") setCurrentRole("Faculty");
-        else if (saved === "HOD") setCurrentRole("HOD");
-        else if (saved === "Administration") setCurrentRole("Super Admin");
-      }
-    } catch (e) {
-      // Ignore sessionStorage issues
-    }
-  }, []);
-
   const selectPortal = (portal: PortalType) => {
     setActivePortal(portal);
     try {
@@ -206,6 +190,9 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
     } else if (portal === "Administration") {
       setCurrentRole("Super Admin");
       showToast("Administration Portal Activated", "Full institutional operations access granted.");
+    } else if (portal === "IT") {
+      setCurrentRole("Super Admin");
+      showToast("IT Dev Portal Activated", "Command center & engineering infrastructure active.");
     }
   };
 

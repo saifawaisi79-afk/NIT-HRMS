@@ -25,6 +25,7 @@ export default function DashboardPage() {
     case "HOD":
       return <HODDashboard />;
     case "Administration":
+    case "IT":
       return <AdminDashboard />;
     default:
       return <PortalSelector />;

@@ -123,6 +123,8 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                   ? "Faculty Portal"
                   : activePortal === "HOD"
                   ? "HOD Portal"
+                  : activePortal === "IT"
+                  ? "IT Dev Portal"
                   : "Administration Portal"}
               </span>
               <button

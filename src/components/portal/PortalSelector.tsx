@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import {
-  Users,
+  GraduationCap,
   UserCheck,
   Shield,
   CreditCard,
@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Sparkles,
   CheckCircle2,
-  LockOpen,
   Activity,
 } from "lucide-react";
 import { useDepartment, PortalType } from "@/context/DepartmentContext";
@@ -22,58 +21,58 @@ export default function PortalSelector() {
 
   const handleSelect = (portalId: PortalType, portalName: string) => {
     selectPortal(portalId);
-    showToast(`${portalName} Activated`, "Entering portal instantly without authentication...", "success");
+    showToast(`${portalName} Activated`, "Starting portal instantly without authentication...", "success");
     router.push("/");
   };
 
   const portalList = [
     {
       id: "Student" as PortalType,
-      name: "Employee Portal",
+      name: "Student Portal",
       badge: "SELF-SERVICE",
       badgeClass: "bg-blue-50 text-blue-700 border-blue-200/80 shadow-2xs",
       badgeDot: "bg-blue-500",
-      description: "Personal Workspace & Daily Operations",
-      icon: Users,
+      description: "Personal Workspace, Attendance & Academic Records",
+      icon: GraduationCap,
       iconBg: "bg-gradient-to-br from-blue-50 to-indigo-50/90 text-blue-600 border-blue-200/70 group-hover:border-blue-400 group-hover:glow-blue",
       arrowHover: "group-hover:bg-blue-600 group-hover:text-white",
     },
     {
       id: "Faculty" as PortalType,
-      name: "HR Admin Panel",
-      badge: "HUMAN RESOURCES",
+      name: "Faculty Portal",
+      badge: "ACADEMIC & TEACHING",
       badgeClass: "bg-purple-50 text-purple-700 border-purple-200/80 shadow-2xs",
       badgeDot: "bg-purple-500",
-      description: "Talent Acquisition & HR Operations",
+      description: "Teaching Workload, Attendance Marking & Evaluation",
       icon: UserCheck,
       iconBg: "bg-gradient-to-br from-purple-50 to-fuchsia-50/90 text-purple-600 border-purple-200/70 group-hover:border-purple-400 group-hover:glow-purple",
       arrowHover: "group-hover:bg-purple-600 group-hover:text-white",
     },
     {
       id: "HOD" as PortalType,
-      name: "Super Admin Portal",
+      name: "HOD Portal",
       badge: "FULL ACCESS",
       badgeClass: "bg-rose-50 text-rose-700 border-rose-200/80 shadow-2xs",
       badgeDot: "bg-rose-500",
-      description: "Master Oversight & Executive Controls",
+      description: "Master Oversight, Timetable & Executive Approvals",
       icon: Shield,
       iconBg: "bg-gradient-to-br from-rose-50 to-pink-50/90 text-rose-600 border-rose-200/70 group-hover:border-rose-400 group-hover:glow-rose",
       arrowHover: "group-hover:bg-rose-600 group-hover:text-white",
     },
     {
       id: "Administration" as PortalType,
-      name: "Finance & Operations",
-      badge: "FINANCE HUB",
+      name: "Administration Portal",
+      badge: "COLLEGE ADMIN",
       badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200/80 shadow-2xs",
       badgeDot: "bg-emerald-500",
-      description: "Treasury, Payroll & Financial Operations",
+      description: "Admissions, Fee Ledgers, Payroll & College Operations",
       icon: CreditCard,
       iconBg: "bg-gradient-to-br from-emerald-50 to-teal-50/90 text-emerald-600 border-emerald-200/70 group-hover:border-emerald-400 group-hover:glow-emerald",
       arrowHover: "group-hover:bg-emerald-600 group-hover:text-white",
     },
     {
-      id: "Administration" as PortalType,
-      name: "IT & Dev Hub",
+      id: "IT" as PortalType,
+      name: "IT Dev Portal",
       badge: "DEVOPS & INFRA",
       badgeClass: "bg-amber-50 text-amber-800 border-amber-200/80 shadow-2xs",
       badgeDot: "bg-amber-500",
@@ -116,7 +115,7 @@ export default function PortalSelector() {
           </h1>
 
           <p className="text-slate-600 text-sm sm:text-base font-normal mt-5 max-w-md leading-relaxed">
-            Role-based portals, real-time analytics, and complete workforce management in one system.
+            Role-based portals, real-time analytics, and complete academic & department management in one system.
           </p>
 
           {/* 4 Stat Cards in 2x2 Grid with ultra-modern glassmorphic styling */}
@@ -139,7 +138,7 @@ export default function PortalSelector() {
                 <span className="w-2 h-2 rounded-full bg-purple-500" />
               </div>
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
-                HR Modules
+                Academic Modules
               </span>
             </div>
 
@@ -200,7 +199,7 @@ export default function PortalSelector() {
               <span>Click a portal below to enter instantly without authentication</span>
             </p>
 
-            {/* 5 Portals Vertical Stack with rich modern hover effects */}
+            {/* 5 Portals Vertical Stack: Student, Faculty, HOD, Administration, IT Dev */}
             <div className="space-y-3">
               {portalList.map((portal) => {
                 const Icon = portal.icon;
