@@ -24,8 +24,8 @@ export default function StudentDashboard() {
   const { notices, assignments, placements, showToast } = useDepartment();
 
   const studentInfo = {
-    name: "Aarav Sharma",
-    usn: "1NT23CS001",
+    name: "Saif Awaisi",
+    usn: "1NT23CS042",
     semester: "5th Semester",
     section: "Section A",
     academicYear: "2026–27",

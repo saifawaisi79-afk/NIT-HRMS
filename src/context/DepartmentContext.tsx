@@ -230,10 +230,10 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
       avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
     },
     Student: {
-      name: "Aarav Sharma",
+      name: "Saif Awaisi",
       role: "Student",
-      designation: "3rd Year CSE (USN: 1NT23CS001)",
-      email: "aarav.cs23@nitcampus.ac.in",
+      designation: "3rd Year CSE (USN: 1NT23CS042)",
+      email: "saif.cs23@nitcampus.ac.in",
       avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80",
     },
     "Super Admin": {
