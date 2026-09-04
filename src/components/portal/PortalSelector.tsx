@@ -1,213 +1,185 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
-  GraduationCap,
   Users,
-  ShieldCheck,
-  Building2,
+  UserCheck,
+  Shield,
+  CreditCard,
+  Terminal,
   ArrowRight,
-  Sparkles,
-  BookOpen,
-  CalendarCheck,
-  Award,
-  Layers,
-  CheckCircle2,
-  School,
 } from "lucide-react";
 import { useDepartment, PortalType } from "@/context/DepartmentContext";
 
 export default function PortalSelector() {
-  const { selectPortal } = useDepartment();
+  const router = useRouter();
+  const { selectPortal, showToast } = useDepartment();
 
-  const portals: {
-    id: PortalType;
-    title: string;
-    subtitle: string;
-    description: string;
-    icon: React.ComponentType<{ className?: string }>;
-    accentColor: string;
-    badgeBg: string;
-    badgeText: string;
-    buttonText: string;
-    buttonClass: string;
-    persona: string;
-    highlights: string[];
-  }[] = [
+  const handleSelect = (portalId: PortalType, portalName: string) => {
+    selectPortal(portalId);
+    showToast(`${portalName} Activated`, "Entering portal instantly without authentication...", "success");
+    router.push("/");
+  };
+
+  const portalList = [
     {
-      id: "Student",
-      title: "STUDENT PORTAL",
-      subtitle: "Access student academics & campus services",
-      description: "Academic dashboard, attendance, assignments, exams and results.",
-      icon: GraduationCap,
-      accentColor: "from-blue-600 to-indigo-600",
-      badgeBg: "bg-blue-50 text-blue-700 border-blue-200",
-      badgeText: "Learner & Campus Access",
-      buttonText: "Enter Student Portal",
-      buttonClass: "bg-[#1d4ed8] hover:bg-[#1e40af] text-white",
-      persona: "Aarav Sharma • 5th Sem B.Tech CSE (USN: 1NT23CS001)",
-      highlights: [
-        "Real-time attendance & low attendance warnings",
-        "Assignments submission & grades ledger",
-        "Today's lecture & practical lab schedule",
-        "Placement drives & interview applications",
-      ],
-    },
-    {
-      id: "Faculty",
-      title: "FACULTY PORTAL",
-      subtitle: "Teaching, attendance & academic workspace",
-      description: "Classes, attendance, marks, assignments and teaching workload.",
+      id: "Student" as PortalType,
+      name: "Employee Portal",
+      badge: "SELF-SERVICE",
+      badgeClass: "bg-blue-100/70 text-blue-600 border-blue-200/60",
+      description: "Personal Workspace & Daily Operations",
       icon: Users,
-      accentColor: "from-emerald-600 to-teal-600",
-      badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      badgeText: "Teaching & Evaluation Workspace",
-      buttonText: "Enter Faculty Portal",
-      buttonClass: "bg-[#005f73] hover:bg-[#004e5f] text-white",
-      persona: "Dr. Priya Sharma • Professor (DBMS & Data Systems)",
-      highlights: [
-        "1-click daily lecture & lab attendance marking",
-        "Continuous Internal Evaluation (CIE) gradebook",
-        "Course assignments creation & grading drawer",
-        "Mentoring portfolio & academic risk counseling",
-      ],
+      iconBg: "bg-blue-50/90 text-blue-600 border-blue-100",
     },
     {
-      id: "HOD",
-      title: "HOD PORTAL",
-      subtitle: "Department performance & academic administration",
-      description: "Department analytics, faculty, students, workload and academic operations.",
-      icon: ShieldCheck,
-      accentColor: "from-slate-900 to-indigo-950",
-      badgeBg: "bg-indigo-50 text-indigo-700 border-indigo-200",
-      badgeText: "Executive Academic Leadership",
-      buttonText: "Enter HOD Portal",
-      buttonClass: "bg-slate-950 hover:bg-slate-800 text-white",
-      persona: "Dr. Ramesh Kumar • Professor & Head of Department",
-      highlights: [
-        "Department velocity, attendance & CGPA analytics",
-        "Faculty teaching workload matrix & allocation",
-        "Conflict-free timetable scheduling matrix",
-        "Leave sanction approvals (Faculty & Students)",
-      ],
+      id: "Faculty" as PortalType,
+      name: "HR Admin Panel",
+      badge: "HUMAN RESOURCES",
+      badgeClass: "bg-purple-100/70 text-purple-700 border-purple-200/60",
+      description: "Talent Acquisition & HR Operations",
+      icon: UserCheck,
+      iconBg: "bg-purple-50/90 text-purple-600 border-purple-100",
     },
     {
-      id: "Administration",
-      title: "ADMINISTRATION",
-      subtitle: "College operations & system administration",
-      description: "College operations, users, academic setup and reports.",
-      icon: Building2,
-      accentColor: "from-amber-600 to-orange-600",
-      badgeBg: "bg-amber-50 text-amber-800 border-amber-200",
-      badgeText: "Institutional Operations & Setup",
-      buttonText: "Enter Administration",
-      buttonClass: "bg-[#005f73] hover:bg-[#004e5f] text-white",
-      persona: "Dean Office / NIT Administrative Registrar",
-      highlights: [
-        "Student & faculty institutional directories",
-        "Academic years, semesters & syllabus configuration",
-        "Fee collections, pending dues & digital receipts",
-        "B.Tech admissions pipeline & system audit logs",
-      ],
+      id: "HOD" as PortalType,
+      name: "Super Admin Portal",
+      badge: "FULL ACCESS",
+      badgeClass: "bg-rose-100/70 text-rose-600 border-rose-200/60",
+      description: "Master Oversight & Executive Controls",
+      icon: Shield,
+      iconBg: "bg-rose-50/90 text-rose-600 border-rose-100",
+    },
+    {
+      id: "Administration" as PortalType,
+      name: "Finance & Operations",
+      badge: "FINANCE HUB",
+      badgeClass: "bg-emerald-100/70 text-emerald-700 border-emerald-200/60",
+      description: "Treasury, Payroll & Financial Operations",
+      icon: CreditCard,
+      iconBg: "bg-emerald-50/90 text-emerald-600 border-emerald-100",
+    },
+    {
+      id: "Administration" as PortalType,
+      name: "IT & Dev Hub",
+      badge: "DEVOPS & INFRA",
+      badgeClass: "bg-amber-100/70 text-amber-700 border-amber-200/60",
+      description: "Command Center & Engineering Infrastructure",
+      icon: Terminal,
+      iconBg: "bg-amber-50/90 text-amber-600 border-amber-100",
     },
   ];
 
   return (
-    <div className="min-h-[85vh] flex flex-col justify-between py-6 sm:py-10 animate-fade-in font-sans">
-      {/* Hero Header matching screenshot typography and aesthetics */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs text-xs font-extrabold text-slate-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>CSE Department • Digital Management Platform</span>
+    <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-12 relative overflow-hidden bg-[#f8fafc] font-sans antialiased">
+      {/* Soft ambient background gradients matching screenshot */}
+      <div className="w-[500px] h-[500px] bg-gradient-to-br from-cyan-100/40 via-blue-50/20 to-transparent rounded-full blur-3xl absolute -top-40 left-1/4 pointer-events-none" />
+      <div className="w-[420px] h-[420px] bg-gradient-to-tr from-amber-100/30 via-orange-50/20 to-transparent rounded-full blur-3xl absolute -bottom-20 left-10 pointer-events-none" />
+
+      <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center relative z-10 py-6">
+        {/* Left Column: Hero Typography & Stat Cards */}
+        <div className="lg:col-span-6 lg:pr-4">
+          <span className="text-xs sm:text-[13px] font-bold text-amber-600 uppercase tracking-widest block mb-4">
+            NIT PORTAL HRMS
+          </span>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-black text-slate-900 tracking-tight leading-[1.12]">
+            The Modern<br />
+            Workforce Platform
+          </h1>
+
+          <p className="text-slate-600 text-sm sm:text-base font-normal mt-5 max-w-md leading-relaxed">
+            Role-based portals, real-time analytics, and complete workforce management in one system.
+          </p>
+
+          {/* 4 Stat Cards in 2x2 Grid matching reference */}
+          <div className="grid grid-cols-2 gap-4 mt-9 max-w-md">
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+              <span className="text-3xl sm:text-4xl font-black text-slate-950 block">5</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
+                Active Portals
+              </span>
+            </div>
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+              <span className="text-3xl sm:text-4xl font-black text-slate-950 block">16</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
+                HR Modules
+              </span>
+            </div>
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+              <span className="text-3xl sm:text-4xl font-black text-slate-950 block">100%</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
+                Data Integrity
+              </span>
+            </div>
+            <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+              <span className="text-3xl sm:text-4xl font-black text-slate-950 block">24/7</span>
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
+                Availability
+              </span>
+            </div>
+          </div>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-950 tracking-tight leading-tight">
-          CSE <span className="text-[#00b4d8]">Nexus</span>
-        </h1>
-        <p className="text-sm sm:text-base font-semibold text-slate-600">
-          Computer Science & Engineering Department Management System
-        </p>
-
-        <p className="text-xs sm:text-sm text-slate-400 font-medium">
-          Select your portal to continue
-        </p>
-      </div>
-
-      {/* 4 Major Portal Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8 max-w-[1380px] mx-auto w-full">
-        {portals.map((p) => {
-          const Icon = p.icon;
-          return (
-            <div
-              key={p.id}
-              className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col justify-between group"
-            >
-              <div>
-                {/* Header with Icon and Badge */}
-                <div className="flex items-start justify-between gap-3 mb-5">
-                  <div className="w-13 h-13 rounded-2xl bg-slate-50 border border-slate-200/60 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Icon className="w-6 h-6 text-slate-800" />
-                  </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${p.badgeBg}`}>
-                    {p.badgeText}
-                  </span>
-                </div>
-
-                {/* Portal Title & Subtitle */}
-                <h2 className="text-lg font-black tracking-tight text-slate-950">
-                  {p.title}
-                </h2>
-                <p className="text-xs font-bold text-slate-700 mt-1">
-                  &ldquo;{p.subtitle}&rdquo;
-                </p>
-                <p className="text-xs text-slate-500 font-medium mt-2 leading-relaxed">
-                  {p.description}
-                </p>
-
-                {/* Feature Highlights */}
-                <div className="mt-5 pt-4 border-t border-dashed border-slate-200 space-y-2">
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                    KEY CAPABILITIES
-                  </p>
-                  <ul className="space-y-1.5 text-xs text-slate-600 font-medium">
-                    {p.highlights.map((h, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                        <span className="leading-snug">{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Demo persona preview */}
-                <div className="mt-4 p-2.5 rounded-xl bg-slate-50 border border-slate-200/60 text-[11px]">
-                  <p className="text-[9px] font-extrabold uppercase tracking-wider text-slate-400">
-                    DEMO PERSONA
-                  </p>
-                  <p className="font-bold text-slate-800 truncate mt-0.5">{p.persona}</p>
-                </div>
+        {/* Right Column: Floating Select Portal Card */}
+        <div className="lg:col-span-6 flex justify-center lg:justify-end">
+          <div className="bg-white rounded-[32px] p-6 sm:p-8 lg:p-9 shadow-2xl border border-slate-200/80 max-w-[490px] w-full transition-all">
+            {/* Brand Logo matching screenshot */}
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center font-black text-amber-500 text-lg shadow-sm">
+                C
               </div>
-
-              {/* Action Button */}
-              <div className="mt-6 pt-2">
-                <button
-                  onClick={() => selectPortal(p.id)}
-                  className={`w-full py-3 px-4 rounded-full font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-xs group-hover:shadow-md ${p.buttonClass}`}
-                >
-                  <span>{p.buttonText}</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </button>
+              <div className="text-xl font-black tracking-tight text-slate-950">
+                NIT<span className="text-amber-500">Portal</span>
               </div>
             </div>
-          );
-        })}
-      </div>
 
-      {/* Footer Note specified by prompt */}
-      <div className="mt-10 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-xs font-bold text-slate-600">
-          <Sparkles className="w-3.5 h-3.5 text-[#005f73]" />
-          <span>Demo Environment • Authentication will be enabled later</span>
+            {/* Title & Subtitle */}
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-5 tracking-tight">
+              Select Portal
+            </h2>
+            <p className="text-xs sm:text-[13px] text-slate-500 mt-1 mb-6 font-medium">
+              Click a portal below to enter instantly without authentication
+            </p>
+
+            {/* 5 Portals Vertical Stack */}
+            <div className="space-y-3">
+              {portalList.map((portal) => {
+                const Icon = portal.icon;
+                return (
+                  <button
+                    key={portal.name}
+                    onClick={() => handleSelect(portal.id, portal.name)}
+                    className="w-full flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 hover:border-slate-400 hover:shadow-md transition-all duration-200 cursor-pointer bg-white text-left group"
+                  >
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div
+                        className={`w-11 h-11 rounded-xl border flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform ${portal.iconBg}`}
+                      >
+                        <Icon className="w-5 h-5 stroke-[2]" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-bold text-slate-900 text-sm">
+                            {portal.name}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${portal.badgeClass}`}
+                          >
+                            {portal.badge}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-0.5 font-medium truncate">
+                          {portal.description}
+                        </p>
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-all shrink-0 ml-2" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

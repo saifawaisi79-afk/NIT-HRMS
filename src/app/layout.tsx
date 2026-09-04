@@ -17,14 +17,18 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+import { useDepartment } from "@/context/DepartmentContext";
+
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { activePortal } = useDepartment();
   const isLoginPage = pathname === "/login";
+  const isLandingNoPortal = !activePortal && pathname === "/";
 
-  if (isLoginPage) {
+  if (isLoginPage || isLandingNoPortal) {
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="min-h-screen bg-[#f8fafc]">
         {children}
         <ToastContainer />
       </main>
