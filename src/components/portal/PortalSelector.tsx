@@ -7,7 +7,6 @@ import {
   UserCheck,
   Shield,
   CreditCard,
-  Terminal,
   ArrowRight,
   Sparkles,
   CheckCircle2,
@@ -51,10 +50,10 @@ export default function PortalSelector() {
     {
       id: "HOD" as PortalType,
       name: "HOD Portal",
-      badge: "FULL ACCESS",
+      badge: "DEPT. MANAGEMENT",
       badgeClass: "bg-rose-50 text-rose-700 border-rose-200/80 shadow-2xs",
       badgeDot: "bg-rose-500",
-      description: "Master Oversight, Timetable & Executive Approvals",
+      description: "Department Oversight, Timetable & Executive Approvals",
       icon: Shield,
       iconBg: "bg-gradient-to-br from-rose-50 to-pink-50/90 text-rose-600 border-rose-200/70 group-hover:border-rose-400 group-hover:glow-rose",
       arrowHover: "group-hover:bg-rose-600 group-hover:text-white",
@@ -69,17 +68,6 @@ export default function PortalSelector() {
       icon: CreditCard,
       iconBg: "bg-gradient-to-br from-emerald-50 to-teal-50/90 text-emerald-600 border-emerald-200/70 group-hover:border-emerald-400 group-hover:glow-emerald",
       arrowHover: "group-hover:bg-emerald-600 group-hover:text-white",
-    },
-    {
-      id: "IT" as PortalType,
-      name: "IT Dev Portal",
-      badge: "DEVOPS & INFRA",
-      badgeClass: "bg-amber-50 text-amber-800 border-amber-200/80 shadow-2xs",
-      badgeDot: "bg-amber-500",
-      description: "Command Center & Engineering Infrastructure",
-      icon: Terminal,
-      iconBg: "bg-gradient-to-br from-amber-50 to-orange-50/90 text-amber-600 border-amber-200/70 group-hover:border-amber-400 group-hover:glow-amber",
-      arrowHover: "group-hover:bg-amber-600 group-hover:text-white",
     },
   ];
 
@@ -123,7 +111,7 @@ export default function PortalSelector() {
             <div className="glass-surface rounded-2xl p-5 border border-white/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] hover:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.1)] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group">
               <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="flex items-center justify-between">
-                <span className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight block">5</span>
+                <span className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight block">4</span>
                 <span className="w-2 h-2 rounded-full bg-blue-500" />
               </div>
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1.5 block">
@@ -199,7 +187,7 @@ export default function PortalSelector() {
               <span>Click a portal below to enter instantly without authentication</span>
             </p>
 
-            {/* 5 Portals Vertical Stack: Student, Faculty, HOD, Administration, IT Dev */}
+            {/* 4 Portals Vertical Stack: Student, Faculty, HOD, Administration */}
             <div className="space-y-3">
               {portalList.map((portal) => {
                 const Icon = portal.icon;

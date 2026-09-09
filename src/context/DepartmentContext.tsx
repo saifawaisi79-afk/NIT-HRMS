@@ -174,8 +174,10 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
 
   const selectPortal = (portal: PortalType) => {
     setActivePortal(portal);
+    // Set browser cookie for Next.js middleware route protection
     try {
       sessionStorage.setItem("csex_active_portal", portal);
+      document.cookie = `csex_active_portal=${portal}; path=/; SameSite=Strict`;
     } catch (e) {}
 
     if (portal === "Student") {
@@ -198,8 +200,10 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
 
   const exitPortal = () => {
     setActivePortal(null);
+    // Clear both sessionStorage and the middleware cookie
     try {
       sessionStorage.removeItem("csex_active_portal");
+      document.cookie = "csex_active_portal=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict";
     } catch (e) {}
     showToast("Portal Closed", "Returned to demo portal selector.", "info");
   };

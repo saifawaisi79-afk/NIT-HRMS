@@ -1,23 +1,65 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireRole } from "@/lib/api-auth";
 
-export async function GET() {
+/**
+ * GET /api/faculty
+ * Faculty, HOD, and Admin can view faculty directory.
+ * Students cannot access this endpoint.
+ */
+export const GET = requireRole(["Faculty", "HOD", "Administration", "IT"], async (req, role) => {
   try {
     const faculty = await prisma.faculty.findMany({
       orderBy: { employeeId: "asc" },
       include: {
         subjectsTaught: true,
       },
+      // Strip sensitive fields for Faculty role (only see directory info)
     });
-    return NextResponse.json({ success: true, data: faculty });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to fetch faculty" }, { status: 500 });
-  }
-}
 
-export async function POST(request: Request) {
+    // For Faculty role: mask salary/personal contact of other faculty members
+    const sanitized = faculty.map((f) => {
+      if (role === "Faculty") {
+        // Faculty can only see professional directory info, not personal contacts
+        return {
+          id: f.id,
+          employeeId: f.employeeId,
+          name: f.name,
+          designation: f.designation,
+          department: f.department,
+          qualification: f.qualification,
+          experienceYears: f.experienceYears,
+          specialization: f.specialization,
+          officeRoom: f.officeRoom,
+          status: f.status,
+          subjectsTaught: f.subjectsTaught,
+          attendanceRate: f.attendanceRate,
+          // email visible to faculty (professional contact)
+          email: f.email,
+          // phone hidden from other faculty members
+          phone: undefined,
+        };
+      }
+      // HOD and Admin see full records
+      return f;
+    });
+
+    return NextResponse.json({ success: true, data: sanitized, role });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch faculty" },
+      { status: 500 }
+    );
+  }
+});
+
+/**
+ * POST /api/faculty
+ * Only Administration can create faculty records.
+ */
+export const POST = requireRole(["Administration"], async (req) => {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const count = await prisma.faculty.count();
     const empId = `CSE-FAC-${String(count + 1).padStart(3, "0")}`;
 
@@ -39,6 +81,9 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ success: true, data: newFaculty });
   } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to create faculty record" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Failed to create faculty record" },
+      { status: 500 }
+    );
   }
-}
+});
