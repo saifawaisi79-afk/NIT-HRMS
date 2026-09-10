@@ -16,11 +16,16 @@ import {
   Plus,
   TrendingUp,
   UserCheck,
+  CreditCard,
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
 export default function FacultyDashboard() {
-  const { facultyList, studentList, leaves, showToast } = useDepartment();
+  const { facultyList, studentList, leaves, salaries, showToast } = useDepartment();
+
+  const facultySalary =
+    salaries.find((s) => s.empId === "CSE-FAC-002" || s.facultyName.toLowerCase().includes("priya")) ||
+    salaries[0];
 
   const facultyInfo = {
     name: "Dr. Priya Sharma",
@@ -172,6 +177,40 @@ export default function FacultyDashboard() {
           <p className="text-[11px] text-amber-600 font-bold mt-1">Balanced (Target: 16h)</p>
         </div>
       </div>
+
+      {/* Monthly Salary & Payslip Quick Widget */}
+      {facultySalary && (
+        <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-950">
+                  {facultySalary.month} Salary &amp; Compensation
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  ₹{facultySalary.netSalary.toLocaleString()} Credited
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                Gross: ₹{facultySalary.grossSalary.toLocaleString()} • Deductions (NPS/TDS): ₹{facultySalary.totalDeductions.toLocaleString()} • Disbursed to SBI ({facultySalary.accountMasked})
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/salary"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+            >
+              <span>View Payslip &amp; Deductions</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Today's Classes with "Mark Attendance" action */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

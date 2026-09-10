@@ -51,6 +51,13 @@ export default function AdminDashboard() {
 
         <div className="flex items-center gap-3">
           <Link
+            href="/salary"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+          >
+            <CreditCard className="w-3.5 h-3.5 text-[#005f73]" />
+            <span>Staff Payroll</span>
+          </Link>
+          <Link
             href="/admissions"
             className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
           >
@@ -82,9 +89,9 @@ export default function AdminDashboard() {
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">ACTIVE COURSES</span>
-          <p className="text-xl font-black text-slate-950 mt-1">18</p>
-          <span className="text-[10px] text-slate-500 font-bold">AICTE Approved</span>
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">STAFF PAYROLL</span>
+          <p className="text-xl font-black text-slate-950 mt-1">₹1.24 Cr</p>
+          <span className="text-[10px] text-emerald-600 font-bold">95.2% Disbursed</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs">

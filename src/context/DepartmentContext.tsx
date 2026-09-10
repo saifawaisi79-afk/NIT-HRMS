@@ -35,6 +35,8 @@ import {
   AssignmentItem,
   StudyMaterialItem,
   FeeRecord,
+  SalaryRecord,
+  DEMO_SALARIES,
   AdmissionApplicant,
   StudentResult,
   FacultyWorkloadItem,
@@ -116,9 +118,14 @@ interface DepartmentContextType {
   materials: StudyMaterialItem[];
   addStudyMaterial: (material: Omit<StudyMaterialItem, "id" | "uploadDate">) => void;
 
-  // Extended Modules: Fees, Admissions, Results, Workload, Mentoring, Documents, Audit Logs
+  // Extended Modules: Fees, Salaries, Admissions, Results, Workload, Mentoring, Documents, Audit Logs
   fees: FeeRecord[];
   markFeePaid: (id: string) => void;
+  payStudentFee: (id: string, amount: number, paymentMethod: string) => void;
+  grantFeeClearance: (id: string) => void;
+  salaries: SalaryRecord[];
+  disburseSalary: (id: string) => void;
+  disburseAllDepartmentSalaries: () => void;
   admissions: AdmissionApplicant[];
   updateAdmissionStatus: (id: string, status: AdmissionApplicant["status"]) => void;
   results: StudentResult[];
@@ -162,6 +169,7 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
   const [assignments, setAssignments] = useState<AssignmentItem[]>(DEMO_ASSIGNMENTS);
   const [materials, setMaterials] = useState<StudyMaterialItem[]>(DEMO_MATERIALS);
   const [fees, setFees] = useState<FeeRecord[]>(DEMO_FEES);
+  const [salaries, setSalaries] = useState<SalaryRecord[]>(DEMO_SALARIES);
   const [admissions, setAdmissions] = useState<AdmissionApplicant[]>(DEMO_ADMISSIONS);
   const [results] = useState<StudentResult[]>(DEMO_STUDENT_RESULTS);
   const [workload, setWorkload] = useState<FacultyWorkloadItem[]>(DEMO_FACULTY_WORKLOAD);
@@ -431,7 +439,7 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
     showToast("Notifications Read", "All notifications marked as read.", "info");
   };
 
-  // Fees Action
+  // Fees Actions
   const markFeePaid = (id: string) => {
     setFees((prev) =>
       prev.map((f) =>
@@ -448,6 +456,64 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
       )
     );
     showToast("Fee Payment Recorded", "Receipt generated and student clearance updated.");
+  };
+
+  const payStudentFee = (id: string, amount: number, paymentMethod: string) => {
+    setFees((prev) =>
+      prev.map((f) => {
+        if (f.id !== id) return f;
+        const newPaid = f.paidAmount + amount;
+        const newPending = Math.max(0, f.totalFee - newPaid);
+        const status = newPending === 0 ? "Paid" : "Partial";
+        return {
+          ...f,
+          paidAmount: newPaid,
+          pendingAmount: newPending,
+          status,
+          paymentDate: new Date().toISOString().split("T")[0],
+          receiptNo: `NIT-CSE-REC-${Date.now().toString().slice(-6)}`,
+        };
+      })
+    );
+    showToast("Payment Successful", `₹${amount.toLocaleString()} paid via ${paymentMethod}. Receipt generated.`);
+  };
+
+  const grantFeeClearance = (id: string) => {
+    setFees((prev) =>
+      prev.map((f) =>
+        f.id === id
+          ? { ...f, status: "Paid", pendingAmount: 0 }
+          : f
+      )
+    );
+    showToast("No-Dues Clearance Approved", "Student cleared for Examination Hall Ticket.");
+  };
+
+  // Salary Actions
+  const disburseSalary = (id: string) => {
+    setSalaries((prev) =>
+      prev.map((s) =>
+        s.id === id
+          ? {
+              ...s,
+              status: "Disbursed",
+              disbursementDate: new Date().toISOString().split("T")[0],
+            }
+          : s
+      )
+    );
+    showToast("Salary Disbursed", "Bank batch advice transmitted successfully.");
+  };
+
+  const disburseAllDepartmentSalaries = () => {
+    setSalaries((prev) =>
+      prev.map((s) => ({
+        ...s,
+        status: "Disbursed",
+        disbursementDate: new Date().toISOString().split("T")[0],
+      }))
+    );
+    showToast("Batch Payroll Processed", "All pending faculty salaries credited.");
   };
 
   // Admissions Action
@@ -552,6 +618,11 @@ export function DepartmentProvider({ children }: { children: React.ReactNode }) 
         addStudyMaterial,
         fees,
         markFeePaid,
+        payStudentFee,
+        grantFeeClearance,
+        salaries,
+        disburseSalary,
+        disburseAllDepartmentSalaries,
         admissions,
         updateAdmissionStatus,
         results,

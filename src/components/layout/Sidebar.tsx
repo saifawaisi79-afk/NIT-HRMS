@@ -32,6 +32,7 @@ import {
   ShieldCheck,
   User,
   MessageSquare,
+  Receipt,
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
@@ -96,6 +97,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
             { name: "Study Materials", href: "/notes", icon: FolderDown },
             { name: "Examinations", href: "/exams", icon: Award },
             { name: "Results & Grades", href: "/results", icon: BarChart3 },
+            { name: "Fees & Payments", href: "/fees", icon: CreditCard, badge: "₹50k Due" },
           ],
         },
         {
@@ -133,6 +135,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
         {
           title: "FACULTY OPERATIONS",
           items: [
+            { name: "Salary & Payslips", href: "/salary", icon: CreditCard, badge: "₹1.42L" },
             { name: "Leave Applications", href: "/leaves", icon: CalendarOff },
             { name: "Teaching Workload", href: "/workload", icon: Clock, badge: "16 hrs" },
             { name: "Student Mentoring", href: "/mentoring", icon: UserCheck, badge: "4 Mentees" },
@@ -164,6 +167,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
         {
           title: "CAMPUS OPERATIONS",
           items: [
+            { name: "Payroll & Salaries", href: "/salary", icon: CreditCard, badge: "₹1.24 Cr" },
             { name: "Fee Management", href: "/fees", icon: CreditCard, badge: "5 Records" },
             { name: "B.Tech Admissions", href: "/admissions", icon: UserPlus, badge: "4 Applicants" },
             { name: "Central Documents", href: "/documents", icon: FolderDown },
@@ -206,6 +210,8 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
       {
         title: "LEADERSHIP & OPERATIONS",
         items: [
+          { name: "Faculty Payroll & Budget", href: "/salary", icon: CreditCard, badge: "₹58.4L" },
+          { name: "Fee Clearance & Dues", href: "/fees", icon: Receipt, badge: "84% Clear" },
           { name: "Leave Approvals", href: "/leaves", icon: CalendarOff, badge: "5 Pending" },
           { name: "Department Notices", href: "/notices", icon: BellRing },
           { name: "Department Events", href: "/events", icon: Sparkles },

@@ -22,6 +22,9 @@ import {
   Filter,
   BarChart3,
   CalendarDays,
+  CreditCard,
+  Receipt,
+  ArrowRight,
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
@@ -34,6 +37,8 @@ export default function HODDashboard() {
     updateLeaveStatus,
     workload,
     updateWorkload,
+    fees,
+    salaries,
     showToast,
   } = useDepartment();
 
@@ -134,6 +139,63 @@ export default function HODDashboard() {
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">PLACEMENT RATE</span>
           <p className="text-xl font-black text-slate-950 mt-1">{department.placementRate}%</p>
           <span className="text-[10px] text-emerald-600 font-bold">Max: ₹44 LPA</span>
+        </div>
+      </div>
+
+      {/* Department Financial Overview: Faculty Payroll & Student Fee Clearance */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Faculty Payroll Budget */}
+        <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-950">Faculty Payroll &amp; Compensation</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  ₹58.4L / mo
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                34 Department Faculty • 7th CPC Scales • 32 Disbursed (2 Processing)
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/salary"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs shrink-0"
+          >
+            <span>View Payroll</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Student Fee Clearance */}
+        <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <Receipt className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-950">Student Fee &amp; Exam Clearance</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  84.4% Cleared
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                631 / 748 Students Cleared • CIE-1 Hall Tickets Active • 117 Pending
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/fees"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm shrink-0"
+          >
+            <span>Manage Dues</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
 

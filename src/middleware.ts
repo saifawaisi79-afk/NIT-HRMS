@@ -37,6 +37,7 @@ const PROTECTED_PATHS = [
   "/audit-logs",
   "/settings",
   "/messages",
+  "/salary",
 ];
 
 /**
@@ -46,7 +47,8 @@ const PROTECTED_PATHS = [
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
   "/students": ["HOD", "Administration", "IT"],
   "/faculty": ["Faculty", "HOD", "Administration", "IT"],
-  "/fees": ["Administration"],
+  "/fees": ["Student", "HOD", "Administration"],
+  "/salary": ["Faculty", "HOD", "Administration", "IT"],
   "/admissions": ["Administration"],
   "/audit-logs": ["Administration", "IT"],
   "/reports": ["Faculty", "HOD", "Administration"],

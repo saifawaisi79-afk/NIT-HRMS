@@ -17,11 +17,16 @@ import {
   Calendar,
   ChevronRight,
   Download,
+  CreditCard,
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
 export default function StudentDashboard() {
-  const { notices, assignments, placements, showToast } = useDepartment();
+  const { notices, assignments, placements, fees, showToast } = useDepartment();
+
+  const studentFee =
+    fees.find((f) => f.usn === "1NT23CS042" || f.studentName.toLowerCase().includes("saif")) || fees[0];
+  const isFeeCleared = studentFee ? studentFee.pendingAmount === 0 : false;
 
   const studentInfo = {
     name: "Saif Awaisi",
@@ -169,6 +174,46 @@ export default function StudentDashboard() {
           <p className="text-[11px] text-purple-600 font-bold mt-1">Eligible (0 Backlogs)</p>
         </div>
       </div>
+
+      {/* Semester Fee & Dues Quick Widget */}
+      {studentFee && (
+        <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+              isFeeCleared ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+            }`}>
+              <CreditCard className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-950">
+                  Semester 5 Fee &amp; Examination Clearance
+                </span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${
+                  isFeeCleared
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-amber-50 text-amber-700 border-amber-200"
+                }`}>
+                  {isFeeCleared ? "Cleared & Verified" : `₹${studentFee.pendingAmount.toLocaleString()} Pending`}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                Total Fee: ₹{studentFee.totalFee.toLocaleString()} • Paid: ₹{studentFee.paidAmount.toLocaleString()} • Due Date: {studentFee.dueDate}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/fees"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+            >
+              <span>{isFeeCleared ? "View Receipts" : "Pay Outstanding Dues"}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid: Today's Timetable & Subject-Wise Attendance Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
