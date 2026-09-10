@@ -463,12 +463,38 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([
-    { sender: "Saif Awaisi", text: "Dr. Ramesh, the server deployment for the CSE department portal is complete and live.", time: "10:14 AM" },
-    { sender: "You", text: "Excellent work Saif. Let's make sure the attendance and marks modules are verified.", time: "10:16 AM" },
-  ]);
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  // Build userId for current user (matches messaging system demo IDs)
+  function buildUserIdForTopbar(role: string | null): string {
+    if (role === "Student") return "student-1NT23CS042";
+    if (role === "Faculty") return "faculty-CSE-FAC-001";
+    if (role === "HOD") return "hod-HOD-CSE-001";
+    if (role === "Administration") return "administration-ADMIN-001";
+    if (role === "IT") return "it-IT-001";
+    return "unknown";
+  }
+
+  // Poll unread message count every 5 seconds
+  useEffect(() => {
+    if (!activePortal) return;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/messages/unread-count", {
+          headers: {
+            "x-portal-role": activePortal,
+            "x-user-id": buildUserIdForTopbar(activePortal),
+            "x-user-name": currentUser.name,
+          },
+        });
+        const data = await res.json();
+        if (data.success) setUnreadMsgCount(data.data.total);
+      } catch {}
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000);
+    return () => clearInterval(interval);
+  }, [activePortal, currentUser.name]);
 
   const navRef = useRef<HTMLDivElement>(null);
   const mobileNavRef = useRef<HTMLDivElement>(null);
@@ -514,14 +540,6 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
     document.addEventListener("keydown", handleEsc);
     return () => document.removeEventListener("keydown", handleEsc);
   }, []);
-
-  const handleSendChat = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatMessage.trim()) return;
-    setChatHistory([...chatHistory, { sender: "You", text: chatMessage, time: "Just now" }]);
-    setChatMessage("");
-    showToast("Message Sent", "Message dispatched.");
-  };
 
   const unreadCount = notifications.filter((n) => n.unread).length;
 
@@ -693,17 +711,19 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
               <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-white border border-slate-200 text-slate-400 font-mono shadow-2xs">⌘K</kbd>
             </button>
 
-            {/* Messages */}
-            <button
-              onClick={() => setShowChatModal(true)}
+            {/* Messages — links to /messages page with real unread badge */}
+            <Link
+              href="/messages"
               className="relative w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
-              title="Team Messenger"
+              title="Messages"
             >
               <MessageSquare className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white">
-                2
-              </span>
-            </button>
+              {unreadMsgCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[#005f73] text-white rounded-full text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white px-1">
+                  {unreadMsgCount > 9 ? "9+" : unreadMsgCount}
+                </span>
+              )}
+            </Link>
 
             {/* Notifications */}
             <div className="relative">
@@ -925,55 +945,6 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
         )}
       </header>
 
-      {/* ── LIVE MESSENGER MODAL ── */}
-      {showChatModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-fade-in">
-          <div className="fixed inset-0" onClick={() => setShowChatModal(false)} />
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10 flex flex-col h-[520px]">
-            <div className="p-4 bg-slate-900 text-white flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-[#005f73] flex items-center justify-center font-bold text-xs">SA</div>
-                <div>
-                  <h3 className="font-bold text-sm">Saif Awaisi</h3>
-                  <p className="text-[10px] text-emerald-400 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Online • Developer & System Architect
-                  </p>
-                </div>
-              </div>
-              <button onClick={() => setShowChatModal(false)} className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
-              {chatHistory.map((msg, i) => (
-                <div key={i} className={`flex flex-col ${msg.sender === "You" ? "items-end" : "items-start"}`}>
-                  <div className={`p-3 rounded-2xl max-w-[80%] leading-relaxed ${
-                    msg.sender === "You"
-                      ? "bg-[#005f73] text-white rounded-br-none"
-                      : "bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-xs"
-                  }`}>
-                    <p>{msg.text}</p>
-                  </div>
-                  <span className="text-[10px] text-slate-400 mt-1 px-1">{msg.time}</span>
-                </div>
-              ))}
-            </div>
-            <form onSubmit={handleSendChat} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
-              <input
-                type="text"
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Message Saif Awaisi..."
-                className="flex-1 px-4 py-2 text-xs bg-slate-100 rounded-full outline-none focus:ring-2 focus:ring-[#005f73]/20"
-              />
-              <button type="submit" className="px-4 py-2 bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold rounded-full transition shadow-sm">
-                Send
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
     </>
   );
 }

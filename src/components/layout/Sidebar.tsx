@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -31,6 +31,7 @@ import {
   Building2,
   ShieldCheck,
   User,
+  MessageSquare,
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
@@ -42,9 +43,43 @@ interface SidebarProps {
 export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarProps) {
   const pathname = usePathname();
   const { activePortal, currentRole, department, currentUser, exitPortal } = useDepartment();
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  // Build userId matching the messaging system demo IDs
+  function buildUserId(role: string): string {
+    if (role === "Student") return "student-1NT23CS042";
+    if (role === "Faculty") return "faculty-CSE-FAC-001";
+    if (role === "HOD") return "hod-HOD-CSE-001";
+    if (role === "Administration") return "administration-ADMIN-001";
+    if (role === "IT") return "it-IT-001";
+    return `unknown-${role}`;
+  }
+
+  // Poll unread message count every 5 seconds when a portal is active
+  useEffect(() => {
+    if (!activePortal) return;
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch("/api/messages/unread-count", {
+          headers: {
+            "x-portal-role": activePortal,
+            "x-user-id": buildUserId(activePortal),
+            "x-user-name": currentUser.name,
+          },
+        });
+        const data = await res.json();
+        if (data.success) setUnreadMsgCount(data.data.total);
+      } catch {}
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000);
+    return () => clearInterval(interval);
+  }, [activePortal, currentUser.name]);
 
   const getNavigationSections = () => {
     const portal = activePortal || (currentRole === "Student" ? "Student" : currentRole === "Faculty" ? "Faculty" : currentRole === "Super Admin" ? "Administration" : "HOD");
+
+    const msgBadge = unreadMsgCount > 0 ? (unreadMsgCount > 9 ? "9+" : String(unreadMsgCount)) : undefined;
 
     if (portal === "Student") {
       return [
@@ -53,6 +88,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
           items: [
             { name: "Dashboard", href: "/", icon: LayoutDashboard },
             { name: "My Profile", href: "/settings", icon: User },
+            { name: "Messages", href: "/messages", icon: MessageSquare, badge: msgBadge },
             { name: "My Subjects", href: "/subjects", icon: BookOpen, badge: "6" },
             { name: "Timetable", href: "/timetable", icon: CalendarDays },
             { name: "Attendance", href: "/attendance", icon: CalendarCheck, badge: "86%" },
@@ -84,6 +120,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
           items: [
             { name: "Dashboard", href: "/", icon: LayoutDashboard },
             { name: "My Profile", href: "/settings", icon: User },
+            { name: "Messages", href: "/messages", icon: MessageSquare, badge: msgBadge },
             { name: "My Classes", href: "/timetable", icon: CalendarDays },
             { name: "Attendance Register", href: "/attendance", icon: CalendarCheck },
             { name: "Enrolled Students", href: "/students", icon: GraduationCap, badge: "128" },
@@ -115,6 +152,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
           title: "INSTITUTIONAL CORE",
           items: [
             { name: "Admin Dashboard", href: "/", icon: LayoutDashboard },
+            { name: "Messages", href: "/messages", icon: MessageSquare, badge: msgBadge },
             { name: "Student Management", href: "/students", icon: GraduationCap, badge: "748" },
             { name: "Faculty Management", href: "/faculty", icon: Users, badge: "34" },
             { name: "Departments", href: "/reports", icon: Building2 },
@@ -146,6 +184,7 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen }: SidebarPr
         title: "DEPARTMENT CORE",
         items: [
           { name: "HOD Dashboard", href: "/", icon: LayoutDashboard },
+          { name: "Messages", href: "/messages", icon: MessageSquare, badge: msgBadge },
           { name: "Faculty Registry", href: "/faculty", icon: Users, badge: "34" },
           { name: "Student Directory", href: "/students", icon: GraduationCap, badge: "748" },
           { name: "Attendance Monitor", href: "/attendance", icon: CalendarCheck, badge: "84.6%" },

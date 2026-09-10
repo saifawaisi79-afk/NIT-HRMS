@@ -317,3 +317,73 @@ model Notification {
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+// ─── MESSAGING SYSTEM ────────────────────────────────────────────────────────
+
+model Conversation {
+  id             String               @id @default(uuid())
+  type           String               // "direct" | "group" | "announcement"
+  title          String?              // For group/announcement conversations
+  createdBy      String               // userId/roleId of creator
+  createdByRole  String               // "Student" | "Faculty" | "HOD" | "Administration"
+  departmentId   String?              // Scope for dept-based conversations
+  isAnnouncement Boolean              @default(false)
+  members        ConversationMember[]
+  messages       Message[]
+  lastMessageAt  DateTime?
+  lastMessagePreview String?          // Cached preview of last message
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model ConversationMember {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String       // e.g. "student-1NT23CS042" or "faculty-CSE-FAC-001"
+  role           String       // "Student" | "Faculty" | "HOD" | "Administration"
+  displayName    String
+  avatarUrl      String?
+  isAdmin        Boolean      @default(false) // Group admin flag
+  joinedAt       DateTime     @default(now())
+  lastReadAt     DateTime?    // For unread count calculation
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String       // Matches ConversationMember.userId
+  senderRole     String       // "Student" | "Faculty" | "HOD" | "Administration"
+  senderName     String
+  senderAvatar   String?
+  content        String
+  messageType    String       @default("text") // "text" | "system" | "announcement"
+  replyToId      String?      // For threaded replies
+  replyToPreview String?      // Cached content snippet for reply preview
+  isEdited       Boolean      @default(false)
+  editedAt       DateTime?
+  deletedAt      DateTime?    // Soft delete — message is hidden but not destroyed
+  deletedBy      String?
+  readBy         MessageRead[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}
+
+model MessageRead {
+  id        String   @id @default(uuid())
+  messageId String
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  readAt    DateTime @default(now())
+
+  @@unique([messageId, userId])
+  @@index([userId])
+}

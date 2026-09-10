@@ -36,6 +36,7 @@ const PROTECTED_PATHS = [
   "/reports",
   "/audit-logs",
   "/settings",
+  "/messages",
 ];
 
 /**
@@ -65,6 +66,7 @@ const ROUTE_ROLE_MAP: Record<string, string[]> = {
   "/placements": ["Student", "HOD", "Administration"],
   "/documents": ["Student", "HOD", "Administration"],
   "/settings": ["Student", "Faculty", "HOD", "Administration", "IT"],
+  "/messages": ["Student", "Faculty", "HOD", "Administration", "IT"],
 };
 
 export function middleware(req: NextRequest) {
