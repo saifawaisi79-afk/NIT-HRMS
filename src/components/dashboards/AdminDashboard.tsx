@@ -31,42 +31,42 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 animate-fade-in font-sans">
       {/* Institutional Header */}
-      <div className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
               Good Morning, Administrator
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-50 text-amber-800 border border-amber-200">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-amber-50 text-amber-800 border border-amber-200">
               Institutional Admin
             </span>
           </div>
           <p className="text-xs font-bold text-slate-700 mt-1">
-            College Operations & System Administration • Academic Session 2026–27
+            College Operations &amp; System Administration • Academic Session 2026–27
           </p>
-          <p className="text-xs text-slate-500 font-medium">
+          <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
             Dean Office / Administrative Registrar • National Institute of Technology (NIT)
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <Link
             href="/salary"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs text-center"
           >
             <CreditCard className="w-3.5 h-3.5 text-[#005f73]" />
             <span>Staff Payroll</span>
           </Link>
           <Link
             href="/admissions"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs text-center"
           >
             <UserPlus className="w-3.5 h-3.5" />
             <span>Admissions ({admissions.length})</span>
           </Link>
           <Link
             href="/fees"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm text-center"
           >
             <CreditCard className="w-3.5 h-3.5" />
             <span>Manage Fee Ledger</span>

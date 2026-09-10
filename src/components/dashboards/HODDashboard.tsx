@@ -55,35 +55,35 @@ export default function HODDashboard() {
   return (
     <div className="space-y-6 animate-fade-in font-sans">
       {/* Executive Header */}
-      <div className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
               Good Morning, HOD
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200">
               Department Executive
             </span>
           </div>
           <p className="text-xs font-bold text-slate-700 mt-1">
             CSE Department Overview • Academic Year: <span className="text-[#005f73] font-extrabold">{department.academicYear} (Odd Sem)</span>
           </p>
-          <p className="text-xs text-slate-500 font-medium">
-            Dr. Ramesh Kumar • Professor & Head of Department of Computer Science & Engineering
+          <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+            Dr. Ramesh Kumar • Professor &amp; Head of Department of Computer Science &amp; Engineering
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <Link
             href="/timetable"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs text-center"
           >
             <CalendarDays className="w-3.5 h-3.5" />
             <span>Timetable Matrix</span>
           </Link>
           <Link
             href="/reports"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm text-center"
           >
             <BarChart3 className="w-3.5 h-3.5" />
             <span>Generate NBA / NAAC Report</span>

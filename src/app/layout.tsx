@@ -36,12 +36,12 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f1f5f9] text-slate-900">
+    <div className="min-h-screen flex flex-col bg-[#f1f5f9] text-slate-900 overflow-x-hidden w-full">
       {/* Topbar matching exact screenshot header */}
       <Topbar onOpenMobileMenu={() => setMobileOpen(true)} />
 
       {/* Main app container */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto overflow-x-hidden">
         {children}
       </main>
 

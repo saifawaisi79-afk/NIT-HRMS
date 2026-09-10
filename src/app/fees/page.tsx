@@ -122,14 +122,14 @@ export default function FeesPage() {
     return (
       <div className="space-y-6 animate-fade-in font-sans pb-10">
         {/* Student Fee Header */}
-        <div className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
                 Fees &amp; Payments Portal
               </h1>
               <span
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold border ${
+                className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold border ${
                   isCleared
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                     : "bg-amber-50 text-amber-700 border-amber-200"
@@ -141,12 +141,12 @@ export default function FeesPage() {
             <p className="text-xs font-bold text-slate-700 mt-1">
               {studentFeeRecord.studentName} • USN: <span className="text-[#005f73] font-mono">{studentFeeRecord.usn}</span>
             </p>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
               Academic Year {studentFeeRecord.academicYear} • 5th Semester B.Tech (Computer Science &amp; Engineering)
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             {studentFeeRecord.receiptNo && (
               <button
                 onClick={() =>
@@ -161,7 +161,7 @@ export default function FeesPage() {
                     transactionId: "TXN-NIT-CSE-89104",
                   })
                 }
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+                className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs text-center"
               >
                 <Receipt className="w-3.5 h-3.5 text-[#005f73]" />
                 <span>Latest Receipt</span>
@@ -174,7 +174,7 @@ export default function FeesPage() {
                   setPaymentAmount(studentFeeRecord.pendingAmount);
                   setShowPaymentModal(true);
                 }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-extrabold transition shadow-sm"
+                className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-extrabold transition shadow-sm text-center"
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Pay Outstanding Dues</span>

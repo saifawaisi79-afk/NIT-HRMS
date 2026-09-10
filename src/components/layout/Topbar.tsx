@@ -29,6 +29,7 @@ import {
   UserPlus,
   Activity,
   CreditCard,
+  Receipt,
   ShieldCheck,
   ScrollText,
   Settings,
@@ -98,13 +99,14 @@ const NAV_CONFIG: Record<PortalType, NavConfig> = {
       {
         key: "academics",
         label: "Academics",
-        activePaths: ["/subjects", "/timetable", "/attendance", "/assignments", "/notes"],
+        activePaths: ["/subjects", "/timetable", "/attendance", "/assignments", "/notes", "/fees"],
         items: [
           { label: "My Subjects", href: "/subjects", icon: BookOpen },
           { label: "Timetable", href: "/timetable", icon: CalendarDays },
           { label: "Attendance", href: "/attendance", icon: CalendarCheck },
           { label: "Assignments", href: "/assignments", icon: FileText },
           { label: "Study Materials", href: "/notes", icon: FolderDown },
+          { label: "Fees & Payments", href: "/fees", icon: CreditCard },
         ],
       },
       {
@@ -201,9 +203,10 @@ const NAV_CONFIG: Record<PortalType, NavConfig> = {
       {
         key: "admin",
         label: "Administration",
-        activePaths: ["/leaves", "/workload", "/reports"],
+        activePaths: ["/leaves", "/workload", "/reports", "/salary"],
         items: [
-          { label: "Leave", href: "/leaves", icon: CalendarOff },
+          { label: "Salary & Payslips", href: "/salary", icon: CreditCard },
+          { label: "Leave Applications", href: "/leaves", icon: CalendarOff },
           { label: "Workload", href: "/workload", icon: Clock },
           { label: "Notices", href: "/notices", icon: BellRing },
           { label: "Reports", href: "/reports", icon: BarChart3 },
@@ -251,21 +254,23 @@ const NAV_CONFIG: Record<PortalType, NavConfig> = {
       {
         key: "faculty",
         label: "Faculty",
-        activePaths: ["/faculty", "/workload", "/leaves"],
+        activePaths: ["/faculty", "/workload", "/leaves", "/salary"],
         items: [
           { label: "Faculty Directory", href: "/faculty", icon: Users },
           { label: "Faculty Workload", href: "/workload", icon: Clock },
           { label: "Faculty Attendance", href: "/attendance", icon: CalendarCheck },
+          { label: "Faculty Payroll & Budget", href: "/salary", icon: CreditCard },
           { label: "Leave Approvals", href: "/leaves", icon: CalendarOff },
         ],
       },
       {
         key: "students",
         label: "Students",
-        activePaths: ["/students", "/mentoring", "/projects"],
+        activePaths: ["/students", "/mentoring", "/projects", "/fees"],
         items: [
           { label: "Student Directory", href: "/students", icon: GraduationCap },
           { label: "Attendance", href: "/attendance", icon: CalendarCheck },
+          { label: "Fee Clearance & Dues", href: "/fees", icon: Receipt },
           { label: "Student Performance", href: "/results", icon: TrendingUp },
           { label: "At-Risk Students", href: "/mentoring", icon: Activity },
           { label: "Projects", href: "/projects", icon: Rocket },
@@ -349,10 +354,11 @@ const NAV_CONFIG: Record<PortalType, NavConfig> = {
       {
         key: "operations",
         label: "Operations",
-        activePaths: ["/admissions", "/fees", "/documents", "/leaves", "/events"],
+        activePaths: ["/admissions", "/fees", "/documents", "/leaves", "/events", "/salary"],
         items: [
+          { label: "Payroll & Salaries", href: "/salary", icon: CreditCard },
+          { label: "Fee Management", href: "/fees", icon: CreditCard },
           { label: "Admissions", href: "/admissions", icon: UserPlus },
-          { label: "Fees", href: "/fees", icon: CreditCard },
           { label: "Documents", href: "/documents", icon: FolderDown },
           { label: "Notices", href: "/notices", icon: BellRing },
           { label: "Events", href: "/events", icon: Sparkles },
@@ -463,7 +469,66 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [expandedMobileGroup, setExpandedMobileGroup] = useState<string | null>(null);
   const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  // Debounce timers for smooth desktop hover without flicker
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const profileTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleNavMouseEnter = (key: string) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setActiveDropdown(key);
+  };
+
+  const handleNavMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 180);
+  };
+
+  const handleProfileMouseEnter = () => {
+    if (profileTimeoutRef.current) {
+      clearTimeout(profileTimeoutRef.current);
+      profileTimeoutRef.current = null;
+    }
+    setShowProfileMenu(true);
+  };
+
+  const handleProfileMouseLeave = () => {
+    if (profileTimeoutRef.current) {
+      clearTimeout(profileTimeoutRef.current);
+    }
+    profileTimeoutRef.current = setTimeout(() => {
+      setShowProfileMenu(false);
+    }, 180);
+  };
+
+  // Close menus and mobile drawer on page navigation
+  useEffect(() => {
+    setActiveDropdown(null);
+    setShowMobileNav(false);
+    setShowProfileMenu(false);
+    setShowNotifications(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile navigation drawer is open
+  useEffect(() => {
+    if (showMobileNav) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [showMobileNav]);
 
   // Build userId for current user (matches messaging system demo IDs)
   function buildUserIdForTopbar(role: string | null): string {
@@ -503,6 +568,14 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
   const portal = activePortal ?? "HOD";
   const config = NAV_CONFIG[portal];
   const { groups, helpItems, profileLabel, profileItems } = config;
+
+  // Set default expanded group in mobile drawer to the active group
+  useEffect(() => {
+    if (showMobileNav && !expandedMobileGroup) {
+      const activeGrp = groups.find((g) => isGroupActive(g));
+      setExpandedMobileGroup(activeGrp ? activeGrp.key : groups[0]?.key || null);
+    }
+  }, [showMobileNav, groups]);
 
   // Helper: is any path in the group currently active?
   const isGroupActive = (group: NavGroup): boolean => {
@@ -554,25 +627,25 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/70 px-4 lg:px-8 py-2.5 transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/70 px-3 sm:px-4 lg:px-8 py-2 sm:py-2.5 transition-all shadow-[0_2px_15px_rgba(0,0,0,0.03)]">
+        <div className="max-w-[1440px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
 
           {/* ── LEFT: Brand Logo ── */}
-          <div className="flex items-center gap-3 shrink-0 relative">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 relative">
             <button
               onClick={() => setShowLogoMenu(!showLogoMenu)}
-              className="flex items-center gap-2.5 group"
+              className="flex items-center gap-2 sm:gap-2.5 group"
               title="CSE Nexus — NIT"
             >
               {/* NIT CSE logo tile */}
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#005f73] to-[#0a9396] flex flex-col items-center justify-center shadow-md shadow-[#005f73]/20 shrink-0">
-                <span className="text-[8px] font-black text-white leading-none tracking-wider">NIT</span>
-                <span className="text-[8px] font-black text-white/80 leading-none tracking-wider">CSE</span>
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#005f73] to-[#0a9396] flex flex-col items-center justify-center shadow-md shadow-[#005f73]/20 shrink-0">
+                <span className="text-[7px] sm:text-[8px] font-black text-white leading-none tracking-wider">NIT</span>
+                <span className="text-[7px] sm:text-[8px] font-black text-white/80 leading-none tracking-wider">CSE</span>
               </div>
               {/* Word mark */}
               <div className="flex items-baseline gap-1">
-                <span className="text-xl lg:text-2xl font-black tracking-tight text-slate-950 font-sans">CSE</span>
-                <span className="text-xl lg:text-2xl font-black text-[#00b4d8] tracking-tight">Nexus</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-black tracking-tight text-slate-950 font-sans">CSE</span>
+                <span className="text-lg sm:text-xl lg:text-2xl font-black text-[#00b4d8] tracking-tight">Nexus</span>
               </div>
             </button>
 
@@ -583,7 +656,7 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                 <div className="absolute left-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 px-2 z-50 animate-fade-in">
                   <div className="px-3 py-2 border-b border-slate-100 mb-1">
                     <p className="text-[11px] font-extrabold text-slate-900">CSE Nexus</p>
-                    <p className="text-[10px] text-slate-400">NIT — Computer Science & Engg.</p>
+                    <p className="text-[10px] text-slate-400">NIT — Computer Science &amp; Engg.</p>
                   </div>
                   <button
                     onClick={() => { exitPortal(); setShowLogoMenu(false); }}
@@ -605,16 +678,22 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
             )}
           </div>
 
-          {/* ── CENTER: Portal Navigation (desktop) ── */}
+          {/* ── CENTER: Portal Navigation (desktop: auto pop-down on cursor hover) ── */}
           <nav ref={navRef} className="hidden lg:flex items-center gap-1 xl:gap-1.5 text-sm font-medium flex-1 justify-center">
             {groups.map((group) => {
               const isActive = isGroupActive(group);
               const isOpen = activeDropdown === group.key;
               return (
-                <div key={group.key} className="relative">
+                <div
+                  key={group.key}
+                  className="relative"
+                  onMouseEnter={() => handleNavMouseEnter(group.key)}
+                  onMouseLeave={handleNavMouseLeave}
+                >
                   <button
+                    type="button"
                     onClick={() => setActiveDropdown(isOpen ? null : group.key)}
-                    className={`flex items-center gap-1.5 px-3.5 xl:px-4 py-2 rounded-full font-semibold text-xs transition-all whitespace-nowrap ${
+                    className={`flex items-center gap-1.5 px-3.5 xl:px-4 py-2 rounded-full font-semibold text-xs transition-all whitespace-nowrap cursor-pointer ${
                       isActive
                         ? "bg-[#005f73] text-white shadow-sm ring-2 ring-[#005f73]/20"
                         : isOpen
@@ -628,79 +707,96 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                     />
                   </button>
 
-                  {/* Dropdown */}
+                  {/* Dropdown with zero-gap hover hit bridge (pt-1.5) */}
                   {isOpen && (
-                    <div className="absolute left-0 top-full mt-2 w-60 bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-2 px-2 z-50 animate-fade-in">
-                      {group.items.map((item) => {
-                        const Icon = item.icon;
-                        const active = isPathActive(item.href);
-                        return (
-                          <Link
-                            key={item.label}
-                            href={item.href}
-                            onClick={() => setActiveDropdown(null)}
-                            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-colors group ${
-                              active
-                                ? "bg-slate-100 text-slate-950 font-semibold"
-                                : "text-slate-700 hover:text-slate-950 hover:bg-slate-50"
-                            }`}
-                          >
-                            <Icon
-                              className={`w-4 h-4 shrink-0 transition-colors stroke-[1.75] ${
-                                active ? "text-[#005f73]" : "text-slate-400 group-hover:text-slate-700"
+                    <div
+                      className="absolute left-0 top-full pt-1.5 w-60 z-50 animate-fade-in"
+                      onMouseEnter={() => handleNavMouseEnter(group.key)}
+                      onMouseLeave={handleNavMouseLeave}
+                    >
+                      <div className="bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-2 px-2">
+                        {group.items.map((item) => {
+                          const Icon = item.icon;
+                          const active = isPathActive(item.href);
+                          return (
+                            <Link
+                              key={item.label}
+                              href={item.href}
+                              onClick={() => setActiveDropdown(null)}
+                              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium transition-colors group ${
+                                active
+                                  ? "bg-slate-100 text-slate-950 font-semibold"
+                                  : "text-slate-700 hover:text-slate-950 hover:bg-slate-50"
                               }`}
-                            />
-                            <span>{item.label}</span>
-                            {active && (
-                              <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#005f73]" />
-                            )}
-                          </Link>
-                        );
-                      })}
+                            >
+                              <Icon
+                                className={`w-4 h-4 shrink-0 transition-colors stroke-[1.75] ${
+                                  active ? "text-[#005f73]" : "text-slate-400 group-hover:text-slate-700"
+                                }`}
+                              />
+                              <span>{item.label}</span>
+                              {active && (
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#005f73]" />
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
               );
             })}
 
-            {/* Help & Support — static link with dropdown */}
-            <div className="relative">
+            {/* Help & Support — auto pop-down on cursor hover */}
+            <div
+              className="relative"
+              onMouseEnter={() => handleNavMouseEnter("help")}
+              onMouseLeave={handleNavMouseLeave}
+            >
               <button
+                type="button"
                 onClick={() => setActiveDropdown(activeDropdown === "help" ? null : "help")}
-                className={`flex items-center gap-1.5 px-3.5 xl:px-4 py-2 rounded-full font-semibold text-xs transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 xl:px-4 py-2 rounded-full font-semibold text-xs transition-all cursor-pointer ${
                   activeDropdown === "help"
                     ? "bg-slate-100 text-slate-950 font-bold"
                     : "text-slate-700 hover:text-slate-950 hover:bg-slate-50"
                 }`}
               >
                 <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-                <span>Help & Support</span>
+                <span>Help &amp; Support</span>
               </button>
 
               {activeDropdown === "help" && (
-                <div className="absolute left-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-2 px-2 z-50 animate-fade-in">
-                  {helpItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setActiveDropdown(null)}
-                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors group"
-                      >
-                        <Icon className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors stroke-[1.75]" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
+                <div
+                  className="absolute left-0 top-full pt-1.5 w-52 z-50 animate-fade-in"
+                  onMouseEnter={() => handleNavMouseEnter("help")}
+                  onMouseLeave={handleNavMouseLeave}
+                >
+                  <div className="bg-white rounded-2xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-slate-100/90 py-2 px-2">
+                    {helpItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.label}
+                          href={item.href}
+                          onClick={() => setActiveDropdown(null)}
+                          className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-700 hover:text-slate-950 hover:bg-slate-50 transition-colors group"
+                        >
+                          <Icon className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors stroke-[1.75]" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
           </nav>
 
-          {/* ── RIGHT: Actions ── */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* Global Search */}
+          {/* ── RIGHT: Actions (Mobile Optimized, No Overflow) ── */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* Desktop Global Search */}
             <button
               onClick={() => setIsSearchOpen(true)}
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200/80 bg-slate-50/80 hover:bg-slate-100/80 text-slate-500 hover:text-slate-900 transition text-xs font-medium shadow-2xs"
@@ -711,15 +807,24 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
               <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-white border border-slate-200 text-slate-400 font-mono shadow-2xs">⌘K</kbd>
             </button>
 
+            {/* Mobile Global Search Trigger Icon */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="sm:hidden w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-2xs"
+              title="Search records"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
+
             {/* Messages — links to /messages page with real unread badge */}
             <Link
               href="/messages"
-              className="relative w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
+              className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
               title="Messages"
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               {unreadMsgCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-[#005f73] text-white rounded-full text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white px-1">
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-[16px] sm:min-w-[18px] sm:h-[18px] bg-[#005f73] text-white rounded-full text-[8px] sm:text-[9px] font-extrabold flex items-center justify-center ring-2 ring-white px-1">
                   {unreadMsgCount > 9 ? "9+" : unreadMsgCount}
                 </span>
               )}
@@ -732,12 +837,12 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                   setShowNotifications(!showNotifications);
                   setShowProfileMenu(false);
                 }}
-                className="relative w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
+                className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition shadow-xs"
                 title="Notifications"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white rounded-full text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-rose-500 text-white rounded-full text-[9px] sm:text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white">
                     {unreadCount}
                   </span>
                 )}
@@ -746,7 +851,7 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
               {showNotifications && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
-                  <div className="absolute right-0 mt-2 w-80 p-3 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 animate-fade-in text-xs">
+                  <div className="absolute right-0 mt-2 w-72 sm:w-80 p-3 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 animate-fade-in text-xs">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-2">
                       <span className="font-bold text-slate-800">Notifications</span>
                       <button
@@ -770,14 +875,19 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
               )}
             </div>
 
-            {/* Profile Avatar + Dropdown */}
-            <div className="relative">
+            {/* Profile Avatar + Hover/Click Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={handleProfileMouseEnter}
+              onMouseLeave={handleProfileMouseLeave}
+            >
               <button
+                type="button"
                 onClick={() => {
                   setShowProfileMenu(!showProfileMenu);
                   setShowNotifications(false);
                 }}
-                className="flex items-center gap-2 px-2 py-1 rounded-full border border-slate-200 hover:bg-slate-50 transition shadow-xs group"
+                className="flex items-center gap-1.5 sm:gap-2 p-0.5 sm:px-2 sm:py-1 rounded-full border border-slate-200 hover:bg-slate-50 transition shadow-xs group"
                 title={profileLabel}
               >
                 <span className="w-7 h-7 rounded-full bg-slate-950 text-white font-extrabold text-xs flex items-center justify-center">
@@ -790,9 +900,12 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
               </button>
 
               {showProfileMenu && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowProfileMenu(false)} />
-                  <div className="absolute right-0 mt-2 w-64 p-2 bg-white rounded-2xl shadow-2xl border border-slate-200 z-50 animate-fade-in text-xs">
+                <div
+                  className="absolute right-0 top-full pt-1.5 w-64 z-50 animate-fade-in text-xs"
+                  onMouseEnter={handleProfileMouseEnter}
+                  onMouseLeave={handleProfileMouseLeave}
+                >
+                  <div className="p-2 bg-white rounded-2xl shadow-2xl border border-slate-200">
                     {/* Profile Header */}
                     <div className="p-3 border-b border-slate-100 mb-1 flex items-center gap-3">
                       <span className="w-9 h-9 rounded-xl bg-slate-950 text-white font-extrabold text-sm flex items-center justify-center shrink-0">
@@ -844,62 +957,129 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                       </Link>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
 
-            {/* Mobile hamburger */}
+            {/* Mobile hamburger button */}
             <button
               onClick={() => setShowMobileNav(!showMobileNav)}
-              className="lg:hidden w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition"
+              className="lg:hidden w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition"
               title="Menu"
             >
               {showMobileNav ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* ── MOBILE NAV DRAWER ── */}
-        {showMobileNav && (
-          <>
-            <div className="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-sm lg:hidden" onClick={() => setShowMobileNav(false)} />
-            <div
-              ref={mobileNavRef}
-              className="absolute top-full left-0 right-0 z-40 bg-white border-b border-slate-200 shadow-xl lg:hidden animate-fade-in max-h-[80vh] overflow-y-auto"
-            >
-              <div className="p-4 space-y-1">
-                {/* Portal badge */}
-                {activePortal && (
-                  <div className="flex items-center justify-between mb-3 px-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-slate-900 text-white">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      {activePortal} Portal
-                    </span>
-                    <button
-                      onClick={() => { exitPortal(); setShowMobileNav(false); }}
-                      className="text-[11px] px-3 py-1 rounded-full border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition"
-                    >
-                      Switch Portal
-                    </button>
+      {/* ── MOBILE FULL-HEIGHT SLIDE-OVER DRAWER ── */}
+      {showMobileNav && (
+        <div className="fixed inset-0 z-50 lg:hidden flex justify-end animate-fade-in">
+          {/* Dark Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300"
+            onClick={() => setShowMobileNav(false)}
+          />
+
+          {/* Slide-over sheet panel */}
+          <div
+            ref={mobileNavRef}
+            className="relative z-10 w-[86vw] max-w-sm bg-white h-full shadow-2xl flex flex-col overflow-hidden"
+          >
+            {/* Top Sheet Header */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#005f73] to-[#0a9396] flex flex-col items-center justify-center shadow-sm shrink-0">
+                  <span className="text-[7px] font-black text-white leading-none">NIT</span>
+                  <span className="text-[7px] font-black text-white/80 leading-none">CSE</span>
+                </div>
+                <div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-base font-black text-slate-950">CSE</span>
+                    <span className="text-base font-black text-[#00b4d8]">Nexus</span>
                   </div>
-                )}
+                  <span className="text-[10px] font-bold text-slate-500 block -mt-0.5">
+                    {portal} Portal
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowMobileNav(false)}
+                className="w-8 h-8 rounded-full border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:text-slate-900 transition"
+                title="Close menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-                {/* Nav groups collapsed */}
-                {groups.map((group) => (
-                  <div key={group.key} className="rounded-xl overflow-hidden border border-slate-100">
+            {/* User Profile Card inside Drawer */}
+            <div className="p-3.5 bg-slate-50/60 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <span className="w-9 h-9 rounded-full bg-slate-950 text-white font-black text-xs flex items-center justify-center shrink-0">
+                  {initials}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-extrabold text-slate-900 text-xs truncate">{currentUser.name}</p>
+                  <p className="text-[10px] text-slate-500 truncate">{currentUser.designation}</p>
+                </div>
+                <button
+                  onClick={() => { exitPortal(); setShowMobileNav(false); }}
+                  className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 shadow-2xs hover:bg-slate-50 shrink-0"
+                >
+                  Switch
+                </button>
+              </div>
+
+              {/* Mobile Quick Action Buttons inside drawer */}
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <button
+                  onClick={() => { setIsSearchOpen(true); setShowMobileNav(false); }}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-white border border-slate-200 text-[11px] font-bold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
+                >
+                  <Search className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Search (⌘K)</span>
+                </button>
+                <Link
+                  href="/messages"
+                  onClick={() => setShowMobileNav(false)}
+                  className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#005f73] text-white text-[11px] font-bold shadow-2xs hover:bg-[#004e5f] transition"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Messages</span>
+                  {unreadMsgCount > 0 && (
+                    <span className="bg-rose-500 text-white text-[9px] font-black rounded-full px-1.5 py-0.2">
+                      {unreadMsgCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
+            </div>
+
+            {/* Scrollable Accordion Groups */}
+            <div className="flex-1 overflow-y-auto p-3.5 space-y-2">
+              {groups.map((group) => {
+                const isActive = isGroupActive(group);
+                const isExpanded = expandedMobileGroup === group.key;
+                return (
+                  <div key={group.key} className="rounded-xl overflow-hidden border border-slate-100 bg-white">
                     <button
-                      onClick={() => setActiveDropdown(activeDropdown === group.key ? null : group.key)}
-                      className={`w-full flex items-center justify-between px-4 py-3 text-xs font-bold transition ${
-                        isGroupActive(group) ? "bg-[#005f73] text-white" : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                      onClick={() => setExpandedMobileGroup(isExpanded ? null : group.key)}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold transition ${
+                        isActive
+                          ? "bg-[#005f73] text-white"
+                          : isExpanded
+                          ? "bg-slate-100 text-slate-950 font-bold"
+                          : "bg-slate-50/90 text-slate-700 hover:bg-slate-100"
                       }`}
                     >
                       <span>{group.label}</span>
                       <ChevronDown
-                        className={`w-3.5 h-3.5 transition-transform duration-200 ${activeDropdown === group.key ? "rotate-180" : ""} ${isGroupActive(group) ? "text-white/70" : "text-slate-400"}`}
+                        className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""} ${isActive ? "text-white/80" : "text-slate-400"}`}
                       />
                     </button>
-                    {activeDropdown === group.key && (
-                      <div className="bg-white border-t border-slate-100 py-1 px-1">
+                    {isExpanded && (
+                      <div className="py-1 px-1 divide-y divide-slate-50">
                         {group.items.map((item) => {
                           const Icon = item.icon;
                           const active = isPathActive(item.href);
@@ -907,44 +1087,70 @@ export default function Topbar({ onOpenMobileMenu }: { onOpenMobileMenu?: () => 
                             <Link
                               key={item.label}
                               href={item.href}
-                              onClick={() => { setActiveDropdown(null); setShowMobileNav(false); }}
-                              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
-                                active ? "text-[#005f73] font-semibold bg-slate-50" : "text-slate-700 hover:bg-slate-50"
+                              onClick={() => setShowMobileNav(false)}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                                active
+                                  ? "text-[#005f73] font-bold bg-slate-50"
+                                  : "text-slate-700 hover:bg-slate-50"
                               }`}
                             >
                               <Icon className={`w-4 h-4 shrink-0 stroke-[1.75] ${active ? "text-[#005f73]" : "text-slate-400"}`} />
                               <span>{item.label}</span>
+                              {active && (
+                                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#005f73]" />
+                              )}
                             </Link>
                           );
                         })}
                       </div>
                     )}
                   </div>
-                ))}
+                );
+              })}
 
-                {/* Help */}
-                <div className="pt-2 border-t border-slate-100">
-                  {helpItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        onClick={() => setShowMobileNav(false)}
-                        className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
-                      >
-                        <Icon className="w-4 h-4 text-slate-400 stroke-[1.75]" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
+              {/* Help & Support accordion */}
+              <div className="pt-2 border-t border-slate-100">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-2 mb-1.5">
+                  Support &amp; Resources
+                </p>
+                {helpItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      onClick={() => setShowMobileNav(false)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+                    >
+                      <Icon className="w-4 h-4 text-slate-400 stroke-[1.75]" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
-          </>
-        )}
-      </header>
 
+            {/* Bottom Drawer Footer */}
+            <div className="p-3 border-t border-slate-100 bg-slate-50/70 flex items-center justify-between text-xs font-bold">
+              <button
+                onClick={() => { exitPortal(); setShowMobileNav(false); }}
+                className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900"
+              >
+                <Home className="w-3.5 h-3.5 text-slate-400" />
+                <span>Switch Portal</span>
+              </button>
+              <Link
+                href="/login"
+                onClick={() => setShowMobileNav(false)}
+                className="flex items-center gap-1.5 text-rose-600 hover:text-rose-700"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Sign Out</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -56,44 +56,44 @@ export default function StudentDashboard() {
   return (
     <div className="space-y-6 animate-fade-in font-sans">
       {/* Header Profile Section */}
-      <div className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full ring-2 ring-[#005f73]/40 bg-slate-100 overflow-hidden shrink-0 shadow-xs">
+      <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+        <div className="flex items-center gap-3.5 sm:gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full ring-2 ring-[#005f73]/40 bg-slate-100 overflow-hidden shrink-0 shadow-xs">
             <img
               src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80"
               alt="Student"
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
                 Good Morning, Student
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
                 Active Student
               </span>
             </div>
-            <p className="text-xs font-bold text-slate-700 mt-1">
+            <p className="text-xs font-bold text-slate-700 mt-1 truncate">
               {studentInfo.name} • USN: <span className="text-[#005f73] font-extrabold">{studentInfo.usn}</span>
             </p>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
               {studentInfo.program} • {studentInfo.semester} ({studentInfo.section}) • Academic Year: {studentInfo.academicYear}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
           <Link
             href="/documents"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs text-center"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download ID Card</span>
           </Link>
           <Link
             href="/attendance"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm text-center"
           >
             <span>View Attendance Register</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -102,17 +102,19 @@ export default function StudentDashboard() {
       </div>
 
       {/* Low Attendance Alert if any subject is near or below 75% */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-start sm:items-center gap-3 text-xs text-amber-900 shadow-xs">
-        <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
-        <div className="flex-1">
-          <span className="font-extrabold text-amber-950 mr-1">LOW ATTENDANCE WARNING:</span>
-          <span>
-            Your attendance in <strong>CS502: Operating Systems Principles</strong> is currently at <strong>76%</strong> (cutoff is 75%). Missing 1 more session may trigger semester exam debarment.
-          </span>
+      <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/80 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center gap-3 text-xs text-amber-900 shadow-xs">
+        <div className="flex items-start gap-2.5 flex-1">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+          <div className="flex-1">
+            <span className="font-extrabold text-amber-950 mr-1">LOW ATTENDANCE WARNING:</span>
+            <span>
+              Your attendance in <strong>CS502: Operating Systems Principles</strong> is currently at <strong>76%</strong> (cutoff is 75%). Missing 1 more session may trigger semester exam debarment.
+            </span>
+          </div>
         </div>
         <Link
           href="/leaves"
-          className="shrink-0 px-3 py-1.5 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-[11px] transition"
+          className="w-full sm:w-auto text-center shrink-0 px-3.5 py-1.5 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-[11px] transition"
         >
           Apply Medical / Duty Leave
         </Link>
@@ -177,15 +179,15 @@ export default function StudentDashboard() {
 
       {/* Semester Fee & Dues Quick Widget */}
       {studentFee && (
-        <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[22px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 ${
               isFeeCleared ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
             }`}>
-              <CreditCard className="w-6 h-6" />
+              <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-black text-slate-950">
                   Semester 5 Fee &amp; Examination Clearance
                 </span>
@@ -203,10 +205,10 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <Link
               href="/fees"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-bold transition shadow-sm text-center"
             >
               <span>{isFeeCleared ? "View Receipts" : "Pay Outstanding Dues"}</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -218,7 +220,7 @@ export default function StudentDashboard() {
       {/* Main Grid: Today's Timetable & Subject-Wise Attendance Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: Today's Timetable */}
-        <div className="lg:col-span-7 p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div className="lg:col-span-7 p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-black text-slate-950 tracking-tight">Today&apos;s Timetable</h2>
@@ -257,7 +259,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Right: Subject-wise Attendance Progress */}
-        <div className="lg:col-span-5 p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div className="lg:col-span-5 p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-black text-slate-950 tracking-tight">Attendance Summary</h2>
@@ -322,7 +324,7 @@ export default function StudentDashboard() {
       {/* Third Row: Upcoming Deliverables, Placements & Department Notices */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Upcoming Deliverables: Assignments & Exams */}
-        <div className="lg:col-span-6 p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div className="lg:col-span-6 p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-black text-slate-950 tracking-tight">Pending Coursework & Exams</h2>
@@ -358,7 +360,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Recent Department Notices */}
-        <div className="lg:col-span-6 p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
+        <div className="lg:col-span-6 p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-black text-slate-950 tracking-tight">Recent Notices & Circulars</h2>

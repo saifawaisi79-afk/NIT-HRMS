@@ -90,31 +90,31 @@ export default function SalaryPage() {
     return (
       <div className="space-y-6 animate-fade-in font-sans pb-10">
         {/* Header Profile Section */}
-        <div className="p-7 rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="p-4 sm:p-7 rounded-2xl sm:rounded-[26px] bg-white border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
                 Salary &amp; Compensation
               </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 7th Pay Commission Scale
               </span>
             </div>
             <p className="text-xs font-bold text-slate-700 mt-1">
               {currentFacultySalary.facultyName} • Emp ID: <span className="text-[#005f73] font-mono">{currentFacultySalary.empId}</span>
             </p>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
               {currentFacultySalary.designation} • {currentFacultySalary.payLevel} • {currentFacultySalary.department}
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             {/* Month Switcher Dropdown */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <select
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="appearance-none pl-4 pr-9 py-2 rounded-full border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 outline-none cursor-pointer shadow-xs"
+                className="w-full sm:w-auto appearance-none pl-4 pr-9 py-2 rounded-full border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 outline-none cursor-pointer shadow-xs text-center"
               >
                 {facultySalaries.map((s) => (
                   <option key={s.id} value={s.month}>
@@ -127,7 +127,7 @@ export default function SalaryPage() {
 
             <button
               onClick={() => setActivePayslip(currentFacultySalary)}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-extrabold transition shadow-sm"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#005f73] hover:bg-[#004e5f] text-white text-xs font-extrabold transition shadow-sm text-center"
             >
               <FileText className="w-4 h-4" />
               <span>Official Payslip</span>
