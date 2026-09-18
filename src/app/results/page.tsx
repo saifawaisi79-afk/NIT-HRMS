@@ -17,9 +17,13 @@ export default function ResultsPage() {
   const { results, currentRole, showToast } = useDepartment();
   const [selectedSemester, setSelectedSemester] = useState<number>(4);
 
-  const totalCredits = results.reduce((acc, r) => acc + r.credits, 0);
-  const totalGradePoints = results.reduce((acc, r) => acc + r.gradePoints * r.credits, 0);
-  const sgpa = (totalGradePoints / totalCredits).toFixed(2);
+  // Filter results by selected semester (data has a 'semester' field, fallback shows all if none match)
+  const filteredResults = results.filter((r) => r.semester === selectedSemester || !r.semester);
+  const displayResults = filteredResults.length > 0 ? filteredResults : results;
+
+  const totalCredits = displayResults.reduce((acc, r) => acc + r.credits, 0);
+  const totalGradePoints = displayResults.reduce((acc, r) => acc + r.gradePoints * r.credits, 0);
+  const sgpa = totalCredits > 0 ? (totalGradePoints / totalCredits).toFixed(2) : "0.00";
 
   return (
     <div className="space-y-6 animate-fade-in font-sans">
@@ -59,7 +63,7 @@ export default function ResultsPage() {
         <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CUMULATIVE CGPA</span>
           <p className="text-3xl font-black text-slate-950 mt-1">8.92</p>
-          <span className="text-[11px] text-indigo-600 font-bold">Semesters 1 through 4</span>
+          <span className="text-[11px] text-indigo-600 font-bold">Semesters 1 through 4 (Demo)</span>
         </div>
 
         <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
@@ -117,7 +121,7 @@ export default function ResultsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
-              {results.map((res) => (
+              {displayResults.map((res) => (
                 <tr key={res.id} className="hover:bg-slate-50/80 transition">
                   <td className="py-3 font-mono font-bold text-slate-700">{res.subjectCode}</td>
                   <td className="py-3 font-bold text-slate-900">{res.subjectName}</td>

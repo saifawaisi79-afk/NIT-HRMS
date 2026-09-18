@@ -21,6 +21,13 @@ import {
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good Morning";
+  if (h < 17) return "Good Afternoon";
+  return "Good Evening";
+}
+
 export default function StudentDashboard() {
   const { notices, assignments, placements, fees, showToast } = useDepartment();
 
@@ -68,7 +75,7 @@ export default function StudentDashboard() {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
-                Good Morning, Student
+                {getGreeting()}, {studentInfo.name.split(" ")[0]}
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
                 Active Student

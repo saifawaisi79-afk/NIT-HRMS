@@ -18,19 +18,22 @@ import { useDepartment } from "@/context/DepartmentContext";
 import { LeaveItem } from "@/lib/data/cse-demo-data";
 
 export default function LeavesPage() {
-  const { leaves, applyLeave, updateLeaveStatus, currentRole } = useDepartment();
+  const { leaves, applyLeave, updateLeaveStatus, currentRole, activePortal } = useDepartment();
 
   const [activeFilter, setActiveFilter] = useState<"All" | "Pending" | "Approved" | "Rejected">("All");
   const [applicantFilter, setApplicantFilter] = useState<"All" | "Faculty" | "Student">("All");
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
-  // Apply Form
+  // Apply Form — auto-detect portal to pre-fill the correct applicant
+  const isStudentPortal = activePortal === "Student";
   const [formData, setFormData] = useState({
-    applicantType: "Faculty" as "Faculty" | "Student",
-    applicantName: "Dr. Priya Sharma",
-    applicantId: "fac-2",
-    applicantRoleOrUsn: "Professor",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+    applicantType: (isStudentPortal ? "Student" : "Faculty") as "Faculty" | "Student",
+    applicantName: isStudentPortal ? "Saif Awaisi" : "Dr. Priya Sharma",
+    applicantId: isStudentPortal ? "student-1NT23CS042" : "fac-2",
+    applicantRoleOrUsn: isStudentPortal ? "1NT23CS042" : "Professor",
+    avatar: isStudentPortal
+      ? "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80"
+      : "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
     leaveType: "Casual Leave" as LeaveItem["leaveType"],
     startDate: "2026-09-18",
     endDate: "2026-09-19",

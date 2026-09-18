@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -75,6 +75,19 @@ export default function PortalSelector() {
 
   const [tickerIdx, setTickerIdx] = useState(0);
   const [fade, setFade] = useState(true);
+  const [statusTime, setStatusTime] = useState(() => {
+    const now = new Date();
+    return now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+  });
+
+  useEffect(() => {
+    // Update last-checked time every 60 seconds
+    const tick = setInterval(() => {
+      const now = new Date();
+      setStatusTime(now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }));
+    }, 60000);
+    return () => clearInterval(tick);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -333,7 +346,7 @@ export default function PortalSelector() {
               </span>
             ))}
           </div>
-          <span className="text-[10px] text-slate-400 font-medium shrink-0">All systems operational</span>
+          <span className="text-[10px] text-slate-400 font-medium shrink-0">All systems operational • Last checked {statusTime}</span>
         </div>
       </div>
     </div>

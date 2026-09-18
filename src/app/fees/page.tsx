@@ -634,25 +634,25 @@ export default function FeesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">TOTAL DEPARTMENT STUDENTS</span>
-            <p className="text-2xl font-black text-slate-950 mt-1">748</p>
-            <span className="text-[11px] text-indigo-600 font-bold">Semesters 1 through 8</span>
+            <p className="text-2xl font-black text-slate-950 mt-1">{fees.length}</p>
+            <span className="text-[11px] text-indigo-600 font-bold">Across all semesters</span>
           </div>
 
           <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">CLEARANCE RATE</span>
-            <p className="text-2xl font-black text-emerald-700 mt-1">84.4%</p>
-            <span className="text-[11px] text-emerald-600 font-bold">631 / 748 Students Cleared</span>
+            <p className="text-2xl font-black text-emerald-700 mt-1">{clearanceRate}%</p>
+            <span className="text-[11px] text-emerald-600 font-bold">{fees.filter(f => f.status === "Paid").length} / {fees.length} Students Cleared</span>
           </div>
 
           <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">DEPARTMENT DUES</span>
-            <p className="text-2xl font-black text-rose-600 mt-1">₹18.4 Lakhs</p>
-            <span className="text-[11px] text-rose-600 font-bold">117 Students Pending</span>
+            <p className="text-2xl font-black text-rose-600 mt-1">₹{(totalPending / 100000).toFixed(1)} Lakhs</p>
+            <span className="text-[11px] text-rose-600 font-bold">{fees.filter(f => f.pendingAmount > 0).length} Students Pending</span>
           </div>
 
           <div className="p-5 rounded-[22px] bg-white border border-slate-200/80 shadow-sm">
             <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">HALL TICKETS ISSUED</span>
-            <p className="text-2xl font-black text-[#005f73] mt-1">631</p>
+            <p className="text-2xl font-black text-[#005f73] mt-1">{fees.filter(f => f.status === "Paid").length}</p>
             <span className="text-[11px] text-[#005f73] font-bold">CIE-1 Examination Ready</span>
           </div>
         </div>

@@ -99,7 +99,7 @@ export default function TimetablePage() {
               Department Timetable Matrix
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-[#005f73]/10 text-[#005f73] border border-[#005f73]/20">
-              Even Semester 2021-2022
+              Even Semester 2026-27
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">

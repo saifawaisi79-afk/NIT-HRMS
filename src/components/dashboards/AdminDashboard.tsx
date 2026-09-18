@@ -22,6 +22,13 @@ import {
 } from "lucide-react";
 import { useDepartment } from "@/context/DepartmentContext";
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good Morning";
+  if (h < 17) return "Good Afternoon";
+  return "Good Evening";
+}
+
 export default function AdminDashboard() {
   const { department, studentList, facultyList, fees, admissions, auditLogs } = useDepartment();
 
@@ -35,7 +42,7 @@ export default function AdminDashboard() {
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-950 tracking-tight">
-              Good Morning, Administrator
+              {getGreeting()}, Administrator
             </h1>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold bg-amber-50 text-amber-800 border border-amber-200">
               Institutional Admin
